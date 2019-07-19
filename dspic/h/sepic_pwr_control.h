@@ -29,35 +29,34 @@
 
 // This is a guard condition so that contents of this file are not included
 // more than once.  
-#ifndef INITIALIZE_BUCK_POWER_CONTROL_H
-#define	INITIALIZE_BUCK_POWER_CONTROL_H
+#ifndef INITIALIZE_SEPIC_POWER_CONTROL_H
+#define	INITIALIZE_SEPIC_POWER_CONTROL_H
 
 #include <xc.h> // include processor files - each processor file is guarded.  
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "c2p2z_buck.h"
+#include "c2p2z_sepic.h"
 
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 typedef enum {
-    BUCK_STAT_OFF    = 0,  // Converter Status OFF
-    BUCK_STAT_START  = 1,  // Converter STatus Startup
-    BUCK_STAT_ON     = 2,  // Converter Status Active and Running
-    BUCK_STAT_FAULT  = 3   // Converter Status FAULT
-}BUCK_CONVERTER_STATUS_e;
+    SEPIC_STAT_OFF    = 0,  // Converter Status OFF
+    SEPIC_STAT_START  = 1,  // Converter STatus Startup
+    SEPIC_STAT_ON     = 2,  // Converter Status Active and Running
+    SEPIC_STAT_FAULT  = 3   // Converter Status FAULT
+}SEPIC_CONVERTER_STATUS_e;
 
 typedef enum {
-    BUCK_SS_INIT            = 0,  // Soft-Start Phase Initialization
-    BUCK_SS_LAUNCH_PER      = 1,  // Soft-Start Phase Peripheral Launch
-    BUCK_SS_PWR_ON_DELAY    = 2,  // Soft-Start Phase Power On Delay
-    BUCK_SS_PRECHARGE       = 3,  // Soft-Start Phase Precharge Bootstrap C        
-    BUCK_SS_RAMP_UP         = 4,  // Soft-Start Phase Output Ramp Up 
-    BUCK_SS_PWR_GOOD_DELAY  = 5,  // Soft-Start Phase Power Good Delay
-    BUCK_SS_COMPLETE        = 6   // Soft-Start Phase Complete
-}BUCK_SOFT_START_STATUS_e;
+    SEPIC_SS_INIT            = 0,  // Soft-Start Phase Initialization
+    SEPIC_SS_LAUNCH_PER      = 1,  // Soft-Start Phase Peripheral Launch
+    SEPIC_SS_PWR_ON_DELAY    = 2,  // Soft-Start Phase Power On Delay
+    SEPIC_SS_RAMP_UP         = 3,  // Soft-Start Phase Output Ramp Up 
+    SEPIC_SS_PWR_GOOD_DELAY  = 4,  // Soft-Start Phase Power Good Delay
+    SEPIC_SS_COMPLETE        = 5   // Soft-Start Phase Complete
+}SEPIC_SOFT_START_STATUS_e;
 
 typedef struct {
     volatile uint16_t reference;        // Soft-Start target reference value
@@ -67,17 +66,17 @@ typedef struct {
     volatile uint16_t pwr_good_delay;   // Soft-Start Power Good Delay
     volatile uint16_t counter;          // Soft-Start Execution Counter
     volatile uint16_t phase;            // Soft-Start Phase Index
-}BUCK_SOFT_START_t;
+}SEPIC_SOFT_START_t;
 
-extern volatile BUCK_SOFT_START_t buck_soft_start;
+extern volatile SEPIC_SOFT_START_t sepic_soft_start;
     
-extern volatile uint16_t init_buck_pwr_control(void);
-extern volatile uint16_t launch_buck_pwr_control(void);
-extern volatile uint16_t exec_buck_pwr_control(void);
+extern volatile uint16_t init_sepic_pwr_control(void);
+extern volatile uint16_t launch_sepic_pwr_control(void);
+extern volatile uint16_t exec_sepic_pwr_control(void);
 
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* INITIALIZE_BUCK_POWER_CONTROL_H */
+#endif	/* INITIALIZE_SEPIC_POWER_CONTROL_H */
 

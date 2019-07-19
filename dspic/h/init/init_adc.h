@@ -43,8 +43,7 @@ extern "C" {
 
 extern volatile uint16_t init_adc_module(void);
 extern volatile uint16_t init_vin_adc(void);
-extern volatile uint16_t init_buck_adc(void);
-extern volatile uint16_t init_boost_adc(void);
+extern volatile uint16_t init_sepic_adc(void);
 
 extern volatile uint16_t launch_adc(void);
 

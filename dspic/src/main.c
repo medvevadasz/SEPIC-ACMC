@@ -34,16 +34,11 @@ int main(void) {
     init_adc_module();  // Set up Analog-To-Digital converter module
     init_vin_adc();     // Initialize ADC Channel to measure input voltage
     
-    // Initialize peripheral modules of individual power controllers
-//    init_boost_pwr_control();   // Initialize all peripherals and data structures of the boost controller
-
-//    launch_boost_pwr_control(); // Start Buck Power Controller
-
     // Enable Timer1
     T1CONbits.TON = 1; 
     
     // Reset Soft-Start Phase to Initialization
-    buck_soft_start.phase = BUCK_SS_INIT;   
+    sepic_soft_start.phase = SEPIC_SS_INIT;   
     
     while (1) {
 
@@ -53,9 +48,8 @@ int main(void) {
         _T1IF = 0; // reset Timer1 interrupt flag bit
         DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
 
-        exec_buck_pwr_control();
-        //exec_boos_pwr_control();
-        
+        exec_sepic_pwr_control();
+               
         if (tgl_cnt++ > TGL_INTERVAL) // Count 100usec loops until LED toggle interval is exceeded
         {
             DBGLED_TOGGLE;

@@ -40,11 +40,11 @@ extern "C" {
 #endif /* __cplusplus */
 
 extern volatile uint16_t init_acmp_module(void);
-extern volatile uint16_t init_buck_acmp(void);
-extern volatile uint16_t init_boost_acmp(void);
+extern volatile uint16_t init_sepic_acmp(void);
 
-extern volatile uint16_t launch_buck_acmp(void);
-extern volatile uint16_t launch_boost_acmp(void);
+
+extern volatile uint16_t launch_sepic_acmp(void);
+
 
 #ifdef	__cplusplus
 }

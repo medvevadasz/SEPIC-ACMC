@@ -38,45 +38,58 @@
 
 #include "main.h"
 
-#ifdef DPSK3_R30
-// DPSK3 Debug Pins 
-    #define DBGLED_SET		{ _LATB6 = 1; }
-    #define DBGLED_CLEAR	{ _LATB6 = 0; }
-    #define DBGLED_TOGGLE	{ _LATB6 ^= 1; }
-    #define DBGLED_INIT		{ _LATB6 = 0; _TRISB6 = 0; }
-
-    // TP50
-    #define DBGPIN_1_SET	{ _LATB5 = 1; }
-    #define DBGPIN_1_CLEAR	{ _LATB5 = 0; }
-    #define DBGPIN_1_TOGGLE	{ _LATB5 ^= 1; }
-    #define DBGPIN_1_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
-
-    // TP52
-    #define DBGPIN_2_SET	{ _LATB11 = 1; }
-    #define DBGPIN_2_CLEAR	{ _LATB11 = 0; }
-    #define DBGPIN_2_TOGGLE	{ _LATB11 ^= 1; }
-    #define DBGPIN_2_INIT	{ _LATB11 = 0; _TRISB11 = 0; }
-
-    // TP53
-    #define DBGPIN_3_SET	{ _LATB12 = 1; }
-    #define DBGPIN_3_CLEAR	{ _LATB12 = 0; }
-    #define DBGPIN_3_TOGGLE	{ _LATB12 ^= 1; }
-    #define DBGPIN_3_INIT	{ _LATB12 = 0; _TRISB12 = 0; }
-
-#endif
-
-#ifdef MA330048_R30
-// dsPIC33CK DP PIM Debug Pins
+#ifdef _SEPIC_wCKDPPIM_
+    // Red LED on CK_DP_PIM
     #define DBGLED_SET		{ _LATD15 = 1; }
     #define DBGLED_CLEAR	{ _LATD15 = 0; }
     #define DBGLED_TOGGLE	{ _LATD15 ^= 1; }
     #define DBGLED_INIT		{ _LATD15 = 0; _TRISD15 = 0; }
 
-    #define DBGPIN_SET		{ _LATD12 = 1; }
-    #define DBGPIN_CLEAR	{ _LATD12 = 0; }
-    #define DBGPIN_TOGGLE	{ _LATD12 ^= 1; }
-    #define DBGPIN_INIT		{ _LATD12 = 0; _TRISD12 = 0; }
+    // TP4 on CK_DP_PIM
+    #define DBGPIN_1_SET	{ _LATD12 = 1; }
+    #define DBGPIN_1_CLEAR	{ _LATD12 = 0; }
+    #define DBGPIN_1_TOGGLE	{ _LATD12 ^= 1; }
+    #define DBGPIN_1_INIT	{ _LATD12 = 0; _TRISD12 = 0; }
+
+    // Green LED on SEPIC
+    #define DBGPIN_2_SET	{ _LATB6 = 1; }
+    #define DBGPIN_2_CLEAR	{ _LATB6 = 0; }
+    #define DBGPIN_2_TOGGLE	{ _LATB6 ^= 1; }
+    #define DBGPIN_2_INIT	{ _LATB6 = 0; _TRISB6 = 0; }
+
+    // Red LED on SEPIC
+    #define DBGPIN_3_SET	{ _LATB5 = 1; }
+    #define DBGPIN_3_CLEAR	{ _LATB5 = 0; }
+    #define DBGPIN_3_TOGGLE	{ _LATB5 ^= 1; }
+    #define DBGPIN_3_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
 #endif
+
+#ifdef _DPDM_wCKDPPIM_
+    // Red LED on CK_DP_PIM
+    #define DBGLED_SET		{ _LATD15 = 1; }
+    #define DBGLED_CLEAR	{ _LATD15 = 0; }
+    #define DBGLED_TOGGLE	{ _LATD15 ^= 1; }
+    #define DBGLED_INIT		{ _LATD15 = 0; _TRISD15 = 0; }
+
+    // TP4 on CK_DP_PIM
+    #define DBGPIN_1_SET	{ _LATD12 = 1; }
+    #define DBGPIN_1_CLEAR	{ _LATD12 = 0; }
+    #define DBGPIN_1_TOGGLE	{ _LATD12 ^= 1; }
+    #define DBGPIN_1_INIT	{ _LATD12 = 0; _TRISD12 = 0; }
+
+    // TP53 on Digital Power Development Board
+    #define DBGPIN_2_SET	{ _LATB6 = 1; }
+    #define DBGPIN_2_CLEAR	{ _LATB6 = 0; }
+    #define DBGPIN_2_TOGGLE	{ _LATB6 ^= 1; }
+    #define DBGPIN_2_INIT	{ _LATB6 = 0; _TRISB6 = 0; }
+
+    // TP55 on Digital Power Development Board
+    #define DBGPIN_3_SET	{ _LATB5 = 1; }
+    #define DBGPIN_3_CLEAR	{ _LATB5 = 0; }
+    #define DBGPIN_3_TOGGLE	{ _LATB5 ^= 1; }
+    #define DBGPIN_3_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
+#endif
+
 
 #ifdef	__cplusplus
 extern "C" {
