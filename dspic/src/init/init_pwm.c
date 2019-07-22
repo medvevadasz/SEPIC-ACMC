@@ -180,7 +180,7 @@ volatile uint16_t init_sepic_pwm(void) {
     
     // PGCLPCIL: PWM GENERATOR CL PCI REGISTER LOW
     PG1CLPCILbits.TSYNCDIS  = 0;            // Termination of latched PCI occurs at PWM EOC
-    PG1CLPCILbits.TERM      = 0b001;        // Termination Event: Terminate when Comparator 1 output transitions from active to inactive
+    PG1CLPCILbits.TERM      = 0b001;        // Termination Event: Terminate when Comparator 3 output transitions from active to inactive
     PG1CLPCILbits.AQPS      = 0b1;          // Acceptance Qualifier (LEB) signal is inverted 
     PG1CLPCILbits.AQSS      = 0b010;        // Acceptance Qualifier: LEB 
     PG1CLPCILbits.SWTERM    = 0b0;          // A write of '1' to this location will produce a termination event. This bit location always reads as '0'.
@@ -415,3 +415,10 @@ void __attribute__((__interrupt__, no_auto_psv)) _PWM3Interrupt(void)
     IFS4bits.PWM3IF     = 0;    // Clearing PWM3 interrupt flag
 }
 
+void __attribute__((__interrupt__, no_auto_psv)) _PWM1Interrupt(void)
+{
+    DBGPIN_2_SET;
+//    DBGPIN_1_TOGGLE;                // Toggle DEBUG-PIN
+    DBGPIN_2_CLEAR;
+    _PWM1IF     = 0;                  // Clearing PWM1 interrupt flag
+}

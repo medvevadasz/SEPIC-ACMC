@@ -64,7 +64,7 @@
     #define DBGPIN_3_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
 #endif
 
-#ifdef _DPDM_wCKDPPIM_
+#ifdef _DPDB_wCKDPPIM_
     // Red LED on CK_DP_PIM
     #define DBGLED_SET		{ _LATD15 = 1; }
     #define DBGLED_CLEAR	{ _LATD15 = 0; }
