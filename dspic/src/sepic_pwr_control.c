@@ -26,7 +26,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
     sepic_soft_start.counter = 0;                // Reset Soft-Start Counter
-    sepic_soft_start.pwr_on_delay = 999;         // Soft-Start Power-On Delay = 100 ms
+    sepic_soft_start.pwr_on_delay = 4999;        // Soft-Start Power-On Delay = 500 ms
     sepic_soft_start.ramp_period = 499;          // Soft-Start Ramp Period = 50 ms
     sepic_soft_start.pwr_good_delay = 1999;      // Soft-Start Power Good Delay = 200 ms
     sepic_soft_start.reference = 2204;           // Soft-Start Target Reference = 12V
@@ -92,7 +92,6 @@ volatile uint16_t exec_sepic_pwr_control(void) {
                                
                 while (!adc_active); 
                 c2p2z_sepic.status.flag.enable = 1; // Start the control loop 
-//               c2p2z_sepic.status.flag.enable = 0; // Start the control loop 
                 
                sepic_soft_start.counter = 0;
                sepic_soft_start.phase   = SEPIC_SS_RAMP_UP;
@@ -141,13 +140,11 @@ volatile uint16_t exec_sepic_pwr_control(void) {
     return(1);
 }
 
-void __attribute__((__interrupt__, auto_psv)) _ADCAN16Interrupt(void)
+void __attribute__((__interrupt__, auto_psv, context)) _ADCAN16Interrupt(void)
 {
     
     adc_active = true;
     
-//    dummy = ADCBUF13;
-
     data.vout_sepic = ADCBUF16;
     c2p2z_sepic_Update(&c2p2z_sepic);
 
@@ -155,13 +152,10 @@ void __attribute__((__interrupt__, auto_psv)) _ADCAN16Interrupt(void)
     
 }
 
-void __attribute__((__interrupt__, auto_psv)) _ADCAN6Interrupt(void)
+void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
 {
         
-//    dummy = ADCBUF13;
-
     data.manual_vref = ADCBUF6;
-//    c2p2z_sepic_Update(&c2p2z_sepic);
 
     _ADCAN6IF = 0;  // Clear the ADCANx interrupt flag 
     

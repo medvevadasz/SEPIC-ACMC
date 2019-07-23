@@ -1,5 +1,5 @@
 /* ***************************************************************************************
- * z-Domain Control Loop Designer Version 0.9.0.60.
+ * z-Domain Control Loop Designer Version 0.9.0.61.
  * ***************************************************************************************
  * 2p2z compensation filter coefficients derived for following operating conditions:
  * ***************************************************************************************

@@ -1,8 +1,8 @@
 ;LICENSE / DISCLAIMER
 ; **********************************************************************************
-;  SDK Version: z-Domain Control Loop Designer v0.9.0.60
-;  Author:      M91281
-;  Date/Time:   7/19/2019 6:59:37 PM
+;  SDK Version: z-Domain Control Loop Designer v0.9.0.61
+;  Author:      M91406
+;  Date/Time:   07/23/19 6:39:54 PM
 ; **********************************************************************************
 ;  2P2Z Control Library File (Single Coefficient Factor Scaling Mode)
 ; **********************************************************************************

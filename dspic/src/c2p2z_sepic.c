@@ -1,5 +1,5 @@
 /* ***************************************************************************************
- * z-Domain Control Loop Designer Version 0.9.0.60.
+ * z-Domain Control Loop Designer Version 0.9.0.61.
  * ***************************************************************************************
  * 2p2z compensation filter coefficients derived for following operating conditions:
  * ***************************************************************************************
@@ -34,9 +34,9 @@
  * 	Pole&Zero Placement:
  * ***************************************************************************************
  *
- * 	fP0:	650 Hz 
- * 	fP1:	30000 Hz 
- * 	fZ1:	1000 Hz 
+ * 	fP0:	300 Hz 
+ * 	fP1:	60000 Hz 
+ * 	fZ1:	300 Hz 
  *
  * ***************************************************************************************
  * 	Filter Coefficients and Parameters:
@@ -44,22 +44,22 @@
 
 	volatile fractional c2p2z_sepic_ACoefficients [2] = 
 	{
-		0x7FFF,	// Coefficient A1 will be multiplied with controller output u(n-1)
-		0xD13D	// Coefficient A2 will be multiplied with controller output u(n-2)
+		0x4629,	// Coefficient A1 will be multiplied with controller output u(n-1)
+		0xEFD1	// Coefficient A2 will be multiplied with controller output u(n-2)
 	};
 
 	volatile fractional c2p2z_sepic_BCoefficients [3] = 
 	{
-		0x4C5E,	// Coefficient B0 will be multiplied with error input e(n)
-		0x015C,	// Coefficient B1 will be multiplied with error input e(n-1)
-		0xB4FF	// Coefficient B2 will be multiplied with error input e(n-2)
+		0x7FFF,	// Coefficient B0 will be multiplied with error input e(n)
+		0x00B0,	// Coefficient B1 will be multiplied with error input e(n-1)
+		0x80B1	// Coefficient B2 will be multiplied with error input e(n-2)
 	};
 
 
 	volatile int16_t c2p2z_sepic_pre_scaler = 3;
-	volatile int16_t c2p2z_sepic_post_shift_A = -1;
+	volatile int16_t c2p2z_sepic_post_shift_A = -2;
 	volatile int16_t c2p2z_sepic_post_shift_B = 0;
-	volatile fractional c2p2z_sepic_post_scaler = 0x64DA;
+	volatile fractional c2p2z_sepic_post_scaler = 0x4BE5;
 
 	volatile cNPNZ16b_t c2p2z_sepic; // user-controller data object
 
