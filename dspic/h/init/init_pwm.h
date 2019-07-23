@@ -37,7 +37,6 @@
 
 #define LEB_PERIOD                  100         // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
 
-#define SST_PERIOD                   40         // Update PWM cycle period during soft-start in terms of PWM1 interrupts (in this case EOC) 
 #define MAX_DUTY_CYCLE             1150         // This sets the maximum duty cycle
 
 #define PWM_PERIOD                 1429         // Measured in [tick = 2ns] -> 350 kHz 

@@ -372,41 +372,6 @@ volatile uint16_t launch_sepic_trig_pwm(void) {
     return(1); 
 }
 
-//void __attribute__((__interrupt__, no_auto_psv)) _PWM1Interrupt(void)
-//{
-//    if (++softstart_counter == SST_PERIOD) 
-//    {
-//        softstart_counter = 0;
-//        
-//        if (++SoftStartDC <= FINAL_DUTY_CYCLE) 
-//        {
-//            PG1DC++;
-//            PG2DC++;
-//            while (PG1STATbits.UPDATE | PG2STATbits.UPDATE);
-//            PG1STATbits.UPDREQ = 1; // Update all PWM registers
-//            PG2STATbits.UPDREQ = 1; // Update all PWM registers
-//        }
-//        else {
-//            IEC4bits.PWM1IE         = 0;    // Disabling PWM1 interrupt when FINAL_DUTY_CYCLE is reached
-//            SoftStartFinished       = 1; 
-//            
-//            // ToDo: For debug only
-//            PG3EVTHbits.IEVTSEL     = 0b10;     // ADC TRIGGER 1 event interrupts CPU
-//            IPC17bits.PWM3IP        = 6;        // Setting PWM1 interrupt priority
-//            IFS4bits.PWM3IF         = 0;        // Clearing PWM3 interrupt flag 
-//            IEC4bits.PWM3IE         = 0;        // Disable PWM3 interrupt
-//            
-//            PG4EVTHbits.IEVTSEL     = 0b10;     // ADC TRIGGER 1 event interrupts CPU
-//            IPC17bits.PWM4IP        = 6;        // Setting PWM1 interrupt priority
-//            IFS4bits.PWM4IF         = 0;        // Clearing PWM4 interrupt flag 
-//            IEC4bits.PWM4IE         = 0;        // Disable PWM4 interrupt
-//                       
-//        }
-//    }
-//    
-//    IFS4bits.PWM1IF     = 0;                // Clearing PWM1 interrupt flag
-//}
-
 //void __attribute__((__interrupt__, no_auto_psv)) _PWM3Interrupt(void)
 //{
 //    DBGPIN_1_SET;
