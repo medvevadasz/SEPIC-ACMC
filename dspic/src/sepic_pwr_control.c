@@ -23,6 +23,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_sepic_pwm();        // Set up sepic converter PWM
     init_sepic_acmp();       // Set up sepic converter peak current comparator/DAC
     init_sepic_adc();        // Set up sepic converter ADC (voltage feedback only)
+    init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
     sepic_soft_start.counter = 0;                // Reset Soft-Start Counter
     sepic_soft_start.pwr_on_delay = 999;         // Soft-Start Power-On Delay = 100 ms
@@ -43,7 +44,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic.status.flag.enable = 0;
     
     data.sepic_vref     = 0;
-    data.manual_vref    = sepic_soft_start.reference;   // This the initial reference for the controller after soft-start finished
+    data.manual_vref    = sepic_soft_start.reference;   // This is the initial reference for the controller after soft-start finished
     
     return(1);
 }
@@ -123,9 +124,9 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             break;
                 
         case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
-//            c2p2z_sepic.ptrControlReference = &data.manual_vref;
+            c2p2z_sepic.ptrControlReference = &data.manual_vref;
            
-//            _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt to sample potentiometer defined reference voltage
+            _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt to sample potentiometer defined reference voltage
             
             DBGPIN_2_TOGGLE;
             break;

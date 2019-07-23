@@ -1,4 +1,5 @@
 Closed loop system
+After soft-start finishes, reference voltage for the control loop is taken from AN6 (signal AN15 on SEPIC board)
 
 Soft-start and control parameters can be manipulated in the sepic_power_control.c file, in the init_sepic_pwr_control() function declaration:
 
