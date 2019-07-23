@@ -44,6 +44,7 @@
       <itemPath>Makefile</itemPath>
       <itemPath>MyConfig.mc3</itemPath>
       <itemPath>sepic_ctrl.dcld</itemPath>
+      <itemPath>short_description</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
