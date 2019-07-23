@@ -186,7 +186,7 @@ volatile uint16_t init_sepic_pwm(void) {
     PG1CLPCILbits.SWTERM    = 0b0;          // A write of '1' to this location will produce a termination event. This bit location always reads as '0'.
     PG1CLPCILbits.PSYNC     = 0;            // PCI source is not synchronized to PWM EOC
     PG1CLPCILbits.PPS       = 0;            // Non-inverted PCI polarity
-    PG1CLPCILbits.PSS       = 0b11101;      // Selecting Comparator 3 output as PCI input
+    PG1CLPCILbits.PSS       = 0b11011;      // Selecting Comparator 3 output as PCI input
 //    PG1CLPCILbits.PSS       = 0b00000;      // PCI is DISABLED
     
     // Reset further PCI control registers

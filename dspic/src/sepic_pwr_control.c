@@ -38,9 +38,9 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic.InputOffset = 0;
     c2p2z_sepic.ptrControlReference = &data.sepic_vref;
     c2p2z_sepic.ptrSource = &ADCBUF16;
-    c2p2z_sepic.ptrTarget = &DAC3DATH;
-    c2p2z_sepic.MaxOutput = 3600;
-    c2p2z_sepic.MinOutput = 10;
+    c2p2z_sepic.ptrTarget = &DAC1DATH;
+    c2p2z_sepic.MaxOutput = DAC_MAXIMUM;
+    c2p2z_sepic.MinOutput = DAC_MINIMUM;
     c2p2z_sepic.status.flag.enable = 0;
     
     data.sepic_vref     = 0;
@@ -161,7 +161,7 @@ void __attribute__((__interrupt__, auto_psv)) _ADCAN6Interrupt(void)
 //    dummy = ADCBUF13;
 
     data.manual_vref = ADCBUF6;
-    c2p2z_sepic_Update(&c2p2z_sepic);
+//    c2p2z_sepic_Update(&c2p2z_sepic);
 
     _ADCAN6IF = 0;  // Clear the ADCANx interrupt flag 
     
