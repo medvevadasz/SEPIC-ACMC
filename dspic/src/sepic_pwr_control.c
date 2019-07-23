@@ -36,13 +36,14 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic.ptrADCTriggerRegister = &PG3TRIGA;
     c2p2z_sepic.InputOffset = 0;
     c2p2z_sepic.ptrControlReference = &data.sepic_vref;
-    c2p2z_sepic.ptrSource = &ADCBUF13;
-    c2p2z_sepic.ptrTarget = &DAC1DATH;
+    c2p2z_sepic.ptrSource = &ADCBUF16;
+    c2p2z_sepic.ptrTarget = &DAC3DATH;
     c2p2z_sepic.MaxOutput = 3600;
     c2p2z_sepic.MinOutput = 10;
     c2p2z_sepic.status.flag.enable = 0;
     
-    data.sepic_vref = 0;
+    data.sepic_vref     = 0;
+    data.manual_vref    = sepic_soft_start.reference;   // This the initial reference for the controller after soft-start finished
     
     return(1);
 }
@@ -66,15 +67,16 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
             init_sepic_pwr_control();    // Initialize all peripherals and data structures of the controller
             sepic_soft_start.phase = SEPIC_SS_LAUNCH_PER;
-            
-            break;
+            DBGPIN_2_SET;
+            DBGPIN_3_SET;
+        break;
 
         case SEPIC_SS_LAUNCH_PER: // Enabling PWM, ADC, CMP, DAC 
             
             launch_sepic_pwr_control(); 
             sepic_soft_start.phase = SEPIC_SS_PWR_ON_DELAY;
-            
-            break;
+            DBGPIN_2_CLEAR;
+        break;
         
         /* In this step the soft-start procedure continues with counting up 
          * until the defined power-on delay period has expired. PWM1H is kept low.
@@ -85,12 +87,15 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             if(sepic_soft_start.counter++ > sepic_soft_start.pwr_on_delay)
             {
                 PG1IOCONLbits.OVRENH = 0;  // User override disabled for PWMxH Pin
+                PG1IOCONLbits.OVRENL = 0;  // User override disabled for PWMxL Pin; Although not used, disabling override for this pin is necessary for being able to use PWMxH!!
                                
                 while (!adc_active); 
                 c2p2z_sepic.status.flag.enable = 1; // Start the control loop 
+//               c2p2z_sepic.status.flag.enable = 0; // Start the control loop 
                 
                sepic_soft_start.counter = 0;
                sepic_soft_start.phase   = SEPIC_SS_RAMP_UP;
+               DBGPIN_2_SET;
             }
             break;    
                  
@@ -103,6 +108,7 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             {
                sepic_soft_start.counter = 0;
                sepic_soft_start.phase   = SEPIC_SS_PWR_GOOD_DELAY;
+               DBGPIN_2_CLEAR;
             }
             break; 
             
@@ -112,11 +118,16 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             {
              sepic_soft_start.counter = 0; 
              sepic_soft_start.phase   = SEPIC_SS_COMPLETE;
+             DBGPIN_2_SET;
             }
             break;
                 
-        case SEPIC_SS_COMPLETE: // Soft start is complete, system is running
-            Nop();
+        case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
+//            c2p2z_sepic.ptrControlReference = &data.manual_vref;
+           
+//            _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt to sample potentiometer defined reference voltage
+            
+            DBGPIN_2_TOGGLE;
             break;
 
         default: // If something is going wrong, reset entire PWR controller
@@ -140,6 +151,18 @@ void __attribute__((__interrupt__, auto_psv)) _ADCAN16Interrupt(void)
     c2p2z_sepic_Update(&c2p2z_sepic);
 
     _ADCAN16IF = 0;  // Clear the ADCANx interrupt flag 
+    
+}
+
+void __attribute__((__interrupt__, auto_psv)) _ADCAN6Interrupt(void)
+{
+        
+//    dummy = ADCBUF13;
+
+    data.manual_vref = ADCBUF6;
+    c2p2z_sepic_Update(&c2p2z_sepic);
+
+    _ADCAN6IF = 0;  // Clear the ADCANx interrupt flag 
     
 }
 

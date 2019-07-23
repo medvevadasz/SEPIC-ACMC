@@ -196,6 +196,56 @@ volatile uint16_t init_sepic_adc(void) {
     return(1);
 }
 
+volatile uint16_t init_pot_adc(void) {
+
+    // ANSELx: ANALOG SELECT FOR PORTx REGISTER
+    ANSELBbits.ANSELB1 = 1; // Analog input is enabled and digital input is disabled for RB1 (Potentiometer input)
+    
+    // ADLVLTRGL: ADC LEVEL-SENSITIVE TRIGGER CONTROL REGISTER LOW
+    ADLVLTRGLbits.LVLEN6 = 0; // Input trigger is edge-sensitive
+
+    // ADMOD0L: ADC INPUT MODE CONTROL REGISTER 0 LOW
+    ADMOD0Lbits.DIFF6 = 0; // Differential-Mode for Corresponding Analog Inputs: Channel is single-ended
+    ADMOD0Lbits.SIGN6 = 0; // Output Data Sign for Corresponding Analog Inputs: Channel output data are unsigned
+    
+    // ADEIEL: ADC EARLY INTERRUPT ENABLE REGISTER LOW
+    ADEIELbits.EIEN6 = 1; // Early interrupt is enabled for the channel
+    
+    // ADIEL: ADC INTERRUPT ENABLE REGISTER LOW
+    ADIELbits.IE6 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
+    
+    // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
+    ADTRIG1Hbits.TRGSRC6 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2 (the same for terminating the ramp generation)
+    
+    // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
+    ADCMP1CONbits.CHNL = 6;  // Input Channel Number: 6=AN6
+    ADCMP1CONbits.CMPEN = 0; // Comparator Enable: Comparator is disabled
+    ADCMP1CONbits.IE = 0; // Comparator Common ADC Interrupt Enable: Common ADC interrupt will not be generated for the comparator
+    ADCMP1CONbits.BTWN = 0; // Between Low/High Comparator Event: Disabled
+    ADCMP1CONbits.HIHI = 0; // High/High Comparator Event: Disabled
+    ADCMP1CONbits.HILO = 0; // High/Low Comparator Event: Disabled
+    ADCMP1CONbits.LOHI = 0; // Low/High Comparator Event: Disabled
+    ADCMP1CONbits.LOLO = 0; // Low/Low Comparator Event: Disabled
+   
+    // ADCMPxENL: ADC DIGITAL COMPARATOR x CHANNEL ENABLE REGISTER LOW
+    ADCMP1ENLbits.CMPEN6 = 0; // Comparator Enable for Corresponding Input Channels: AN6 Disabled
+    
+    // ADCMPxLO: ADC COMPARARE REGISTER LOWER THRESHOLD VALUE REGISTER
+    ADCMP1LO = 0; // G=1; 0Vpot=0 ADC ticks
+
+    // ADCMPxHI: ADC COMPARARE REGISTER UPPER THRESHOLD VALUE REGISTER
+    ADCMP1HI = 3722; // G=1; 3Vpot=3722 ADC ticks
+    
+    // ADFLxCON: ADC DIGITAL FILTER x CONTROL REGISTER
+    ADFL1CONbits.FLEN = 0; // Filter Enable: Filter is disabled
+    ADFL1CONbits.MODE = 0b11; // Filter Mode: Averaging mode (always 12-bit result 7 in oversampling mode 12-16bit wide)
+    ADFL1CONbits.OVRSAM = 0b001; // Filter Averaging/Oversampling Ratio: 16x (result in the ADFLxDAT)
+    ADFL1CONbits.IE = 0; // Filter Common ADC Interrupt Enable: Common ADC interrupt will not be generated for the filter
+    ADFL1CONbits.FLCHSEL = 6; // Oversampling Filter Input Channel Selection: 6=AN6
+
+    return(1);
+}
+
 volatile uint16_t launch_adc(void) {
 
     volatile uint16_t timeout=0;
@@ -228,7 +278,13 @@ volatile uint16_t launch_adc(void) {
      // INITIALIZE AN16 INTERRUPTS (SEPIC Output Voltage)
     IPC26bits.ADCAN16IP = 5;   // Interrupt Priority Level 5
     IFS6bits.ADCAN16IF = 0;    // Reset Interrupt Flag Bit
-    IEC6bits.ADCAN16IE = 1;    // Enable ADCAN13 Interrupt 
+    IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
+    
+     // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
+    _ADCAN6IP = 5;   // Interrupt Priority Level 5
+    _ADCAN6IF = 0;    // Reset Interrupt Flag Bit
+    _ADCAN6IE = 0;    // Enable ADCAN6 Interrupt
     
     return(1);
 }
+

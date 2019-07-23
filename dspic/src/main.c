@@ -40,6 +40,9 @@ int main(void) {
     // Reset Soft-Start Phase to Initialization
     sepic_soft_start.phase = SEPIC_SS_INIT;   
     
+    DBGPIN_2_CLEAR;
+    DBGPIN_3_CLEAR;
+    
     while (1) {
 
         // wait for timer1 to overrun

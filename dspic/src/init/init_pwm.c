@@ -407,18 +407,18 @@ volatile uint16_t launch_sepic_trig_pwm(void) {
 //    IFS4bits.PWM1IF     = 0;                // Clearing PWM1 interrupt flag
 //}
 
-void __attribute__((__interrupt__, no_auto_psv)) _PWM3Interrupt(void)
-{
-    DBGPIN_1_SET;
-//    DBGPIN_1_TOGGLE;                // Toggle DEBUG-PIN
-    DBGPIN_1_CLEAR;
-    IFS4bits.PWM3IF     = 0;    // Clearing PWM3 interrupt flag
-}
-
-void __attribute__((__interrupt__, no_auto_psv)) _PWM1Interrupt(void)
-{
-    DBGPIN_2_SET;
-//    DBGPIN_1_TOGGLE;                // Toggle DEBUG-PIN
-    DBGPIN_2_CLEAR;
-    _PWM1IF     = 0;                  // Clearing PWM1 interrupt flag
-}
+//void __attribute__((__interrupt__, no_auto_psv)) _PWM3Interrupt(void)
+//{
+//    DBGPIN_1_SET;
+////    DBGPIN_1_TOGGLE;                // Toggle DEBUG-PIN
+//    DBGPIN_1_CLEAR;
+//    IFS4bits.PWM3IF     = 0;    // Clearing PWM3 interrupt flag
+//}
+//
+//void __attribute__((__interrupt__, no_auto_psv)) _PWM1Interrupt(void)
+//{
+//    DBGPIN_2_SET;
+////    DBGPIN_1_TOGGLE;                // Toggle DEBUG-PIN
+//    DBGPIN_2_CLEAR;
+//    _PWM1IF     = 0;                  // Clearing PWM1 interrupt flag
+//}

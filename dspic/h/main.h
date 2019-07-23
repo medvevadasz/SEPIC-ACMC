@@ -53,6 +53,7 @@
 typedef struct {
     volatile uint16_t vout_sepic;
     volatile uint16_t sepic_vref;
+    volatile uint16_t manual_vref;
 }MY_DATA_POINTS_t;
 
 extern volatile MY_DATA_POINTS_t data;
