@@ -12,15 +12,7 @@
 
 #include "init_acmp.h"
 
-#define DACDATH         0       // DAC value for the buck the slope starts from
-#define DACDATL         205     // Set this to minimum in Slope mode
 
-#define LEB_PER_COMP    50      // Leading edge period for the comparator when slope re-settles to its initial value
-
-#define TMOD_DURATION   75      // Transition Mode Duration
-#define SS_DURATION     85      // Time from Start of Transition Mode until Steady-State Filter is Enabled
-
-#define SLOPE_RATE      43      // Slope Ramp Rate Value
 
 volatile uint16_t init_acmp_module(void) {
 
