@@ -12,6 +12,9 @@
 
 #include "main.h"
 
+volatile uint16_t vref_avg=0;
+volatile uint16_t avg_cnt = 0;
+
 volatile uint16_t ext_reference_init(void) {
 
     sepic.data.v_ref = 0;   // Reset SEPIC reference
@@ -30,8 +33,14 @@ void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
     samp <<= 3;     // normalize to Q15
     res = (volatile uint32_t)samp * V_REF_DIFF;
     res >>= 15;     // normalize back into 16-bit
-    sepic.data.v_ref = (V_REF_MINIMUM + (volatile uint16_t)res);
-
+    
+    vref_avg += (V_REF_MIN + (volatile uint16_t)res);   // Add most recent value to averaging buffer
+    
+    if(!(++avg_cnt & 0x000F)) {
+        sepic.data.v_ref = (vref_avg >> 4); // Copy averaged value into reference
+        vref_avg = 0;                       // Reset averaging buffer
+    }
+    
     _ADCAN6IF = 0;  // Clear the ADCANx interrupt flag 
     
 }

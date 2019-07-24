@@ -40,8 +40,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define DAC_MINIMUM     10
-#define DAC_MAXIMUM     3600
+#define DAC_MINIMUM     50
+#define DAC_MAXIMUM     4050
     
 #define DACDATH         0       // DAC value for the buck the slope starts from
 #define DACDATL         205     // Set this to minimum in Slope mode
