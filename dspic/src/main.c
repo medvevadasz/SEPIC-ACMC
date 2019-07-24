@@ -22,7 +22,7 @@ int main(void) {
 
     volatile uint16_t timeout = 0;
     
-     init_fosc();        // Set up system oscillator for 100 MIPS operation
+    init_fosc();        // Set up system oscillator for 100 MIPS operation
     init_aclk();        // Set up Auxiliary PLL for 500 MHz (source clock to PWM module)
     init_timer1();      // Set up Timer1 as scheduler time base
     init_gpio();        // Initialize common device GPIOs

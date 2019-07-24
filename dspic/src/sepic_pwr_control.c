@@ -78,8 +78,7 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
             sepic.status.flags.op_status = SEPIC_STAT_OFF; // Set SEPIC status to OFF
             sepic.soft_start.phase = SEPIC_SS_LAUNCH_PER;
-            DBGPIN_2_SET;
-            DBGPIN_3_SET;
+
         break;
 
         /*!SEPIC_SS_LAUNCH_PER
@@ -94,7 +93,6 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
             sepic.status.flags.op_status = SEPIC_STAT_OFF; // Set SEPIC status to OFF
             sepic.soft_start.phase = SEPIC_SS_STANDBY;
-            DBGPIN_2_CLEAR;
             
         break;
         
@@ -117,11 +115,11 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             // wait for fault to be cleared, adc to run and the GO bit to be set
             if( (sepic.status.flags.enabled == 1) && 
                 (sepic.status.flags.adc_active) &&
+                (!sepic.status.flags.fault_active) && 
                 (sepic.status.flags.GO) )
             {
                 sepic.soft_start.counter = 0;                   // Reset soft-start counter
                 sepic.soft_start.phase = SEPIC_SS_PWR_ON_DELAY; // Switch to Power On Delay mode
-                DBGPIN_2_CLEAR;
             }
             break;
 
@@ -141,7 +139,6 @@ volatile uint16_t exec_sepic_pwr_control(void) {
 
                 sepic.soft_start.counter = 0;                   // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_RAMP_UP;    // Switch to ramp-up mode
-                DBGPIN_2_SET;
             }
             break;    
                  
@@ -160,7 +157,6 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             {
                 sepic.soft_start.counter = 0;                       // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_PWR_GOOD_DELAY; // switch to Power Good Delay mode
-                DBGPIN_2_CLEAR;
             }
             break; 
             
@@ -172,23 +168,20 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             {
                 sepic.soft_start.counter = 0;                 // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_COMPLETE; // switch to SOFT-START COMPLETE mode
-                DBGPIN_2_SET;
             }
             break;
                 
         case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
             
             sepic.status.flags.op_status = SEPIC_STAT_ON; // Set SEPIC status to ON mode
-
             c2p2z_sepic.ptrControlReference = &sepic.data.v_ref; // hand reference control back
-            
-            DBGPIN_2_TOGGLE;
             break;
 
-        default: // If something is going wrong, reset entire PWR controller
+        default: // If something is going wrong, reset PWR controller to STANDBY
 
             sepic.status.flags.op_status = SEPIC_STAT_FAULT; // Set SEPIC status to FAULT mode
             sepic.status.flags.fault_active = true;          // Set FAULT flag bit
+            sepic.status.flags.adc_active = false;           // Clear ADC_READY flag bit
 
             sepic.soft_start.phase = SEPIC_SS_STANDBY;
             break;

@@ -38,7 +38,7 @@
       <itemPath>src/c2p2z_sepic.c</itemPath>
       <itemPath>src/c2p2z_sepic_asm.s</itemPath>
       <itemPath>src/sepic_pwr_control.c</itemPath>
-      <itemPath>src/external_reference.c</itemPath>
+      <itemPath>src/ext_reference.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
