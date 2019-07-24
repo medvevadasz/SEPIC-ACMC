@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-volatile uint16_t vref_avg=0;
+volatile uint32_t vref_avg=0;
 volatile uint16_t avg_cnt = 0;
 
 volatile uint16_t ext_reference_init(void) {
@@ -36,8 +36,8 @@ void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
     
     vref_avg += (V_REF_MIN + (volatile uint16_t)res);   // Add most recent value to averaging buffer
     
-    if(!(++avg_cnt & 0x000F)) {
-        sepic.data.v_ref = (vref_avg >> 4); // Copy averaged value into reference
+    if(!(++avg_cnt & 0x00FF)) {
+        sepic.data.v_ref = (vref_avg >> 8); // Copy averaged value into reference
         vref_avg = 0;                       // Reset averaging buffer
     }
     
