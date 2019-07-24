@@ -27,18 +27,20 @@ int main(void) {
     init_timer1();      // Set up Timer1 as scheduler time base
     init_gpio();        // Initialize common device GPIOs
     
-    
     // Basic setup of common power controller peripheral modules
     init_pwm_module();  // Set up PWM module (basic module configuration)
     init_acmp_module(); // Set up analog comparator/DAC module
     init_adc_module();  // Set up Analog-To-Digital converter module
     init_vin_adc();     // Initialize ADC Channel to measure input voltage
     
-    // Enable Timer1
-    T1CONbits.TON = 1; 
+    ext_reference_init();   // initialize external reference input
     
     // Reset Soft-Start Phase to Initialization
     sepic.soft_start.phase = SEPIC_SS_INIT;   
+    sepic.status.flags.auto_start = true;
+    
+    // Enable Timer1
+    T1CONbits.TON = 1; 
     
     DBGPIN_2_CLEAR;
     DBGPIN_3_CLEAR;

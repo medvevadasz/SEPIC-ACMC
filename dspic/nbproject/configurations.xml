@@ -16,6 +16,7 @@
       <itemPath>h/npnz16b.h</itemPath>
       <itemPath>h/c2p2z_sepic.h</itemPath>
       <itemPath>h/sepic_pwr_control.h</itemPath>
+      <itemPath>h/ext_reference.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -37,6 +38,7 @@
       <itemPath>src/c2p2z_sepic.c</itemPath>
       <itemPath>src/c2p2z_sepic_asm.s</itemPath>
       <itemPath>src/sepic_pwr_control.c</itemPath>
+      <itemPath>src/external_reference.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

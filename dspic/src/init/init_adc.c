@@ -243,6 +243,11 @@ volatile uint16_t init_pot_adc(void) {
     ADFL1CONbits.IE = 0; // Filter Common ADC Interrupt Enable: Common ADC interrupt will not be generated for the filter
     ADFL1CONbits.FLCHSEL = 6; // Oversampling Filter Input Channel Selection: 6=AN6
 
+     // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
+    _ADCAN6IP = 2;   // Interrupt Priority Level 5
+    _ADCAN6IF = 0;    // Reset Interrupt Flag Bit
+    _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt
+    
     return(1);
 }
 
@@ -280,10 +285,6 @@ volatile uint16_t launch_adc(void) {
     IFS6bits.ADCAN16IF = 0;    // Reset Interrupt Flag Bit
     IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
     
-     // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
-    _ADCAN6IP = 2;   // Interrupt Priority Level 5
-    _ADCAN6IF = 0;    // Reset Interrupt Flag Bit
-    _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt
     
     return(1);
 }

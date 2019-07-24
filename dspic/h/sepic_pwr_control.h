@@ -56,11 +56,12 @@ extern "C" {
 
 typedef struct {
     volatile SEPIC_CONVERTER_OP_STATUS_e op_status :3;  // Bit <0:2> operation status
-    volatile unsigned : 8;                             // Bit <3:10> (reserved)
-    volatile bool pwm_active  :1;                       // Bit 11: Status bit indicating that the PWM outputs have been enabled
-    volatile bool adc_active  :1;                       // Bit 12: Status bit indicating that the ADC has been started and is sampling data
-    volatile bool fault_active  :1;                     // Bit 13: Status bit indicating that a critical fault condition has been detected
-    volatile bool GO :1;                                // Bit 14: POWER SUPPLY START bit (will trigger startup procedure when set)
+    volatile unsigned : 7;                              // Bit <3:9> (reserved)
+    volatile bool pwm_active  :1;                       // Bit 10: Status bit indicating that the PWM outputs have been enabled
+    volatile bool adc_active  :1;                       // Bit 11: Status bit indicating that the ADC has been started and is sampling data
+    volatile bool fault_active  :1;                     // Bit 12: Status bit indicating that a critical fault condition has been detected
+    volatile bool GO :1;                                // Bit 13: POWER SUPPLY START bit (will trigger startup procedure when set)
+    volatile bool auto_start :1;                        // Bit 14: Auto-Start will automatically enable the converter and set the GO bit when ready
     volatile bool enabled :1;                           // Bit 15: Enable-bit (when disabled, power supply will reset in STANDBY mode)
 }__attribute__((packed))SEPIC_CONVERTER_STATUS_FLAGS_t;
 

@@ -46,7 +46,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic.status.flag.enable = 0;
     
     sepic.data.v_ref    = 0; // Reset SEPIC reference value (will be set via external potentiometer)
-//    data.manual_vref    = sepic.soft_start.reference;   // This is the initial reference for the controller after soft-start finished
+//Remove:    data.manual_vref    = sepic.soft_start.reference;   // This is the initial reference for the controller after soft-start finished
     
     return(1);
 }
@@ -112,17 +112,13 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             // Force PWM output and controller to OFF state
             PG1IOCONLbits.OVRENH = 1;           // Disable PWMxH output
             c2p2z_sepic.status.flag.enable = 0; // Disable the control loop
-            sepic.status.flags.pwm_active = false;              // Clear PWM_ACTIVE flag bit
+            sepic.status.flags.pwm_active = false;   // Clear PWM_ACTIVE flag bit
 
             // wait for fault to be cleared, adc to run and the GO bit to be set
             if( (sepic.status.flags.enabled == 1) && 
                 (sepic.status.flags.adc_active) &&
                 (sepic.status.flags.GO) )
             {
-                
-                launch_sepic_pwr_control(); 
-
-                sepic.status.flags.GO = false;                  // Auto-Clear GO bit
                 sepic.soft_start.counter = 0;                   // Reset soft-start counter
                 sepic.soft_start.phase = SEPIC_SS_PWR_ON_DELAY; // Switch to Power On Delay mode
                 DBGPIN_2_CLEAR;
@@ -199,7 +195,15 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
     }
         
-    
+    // Power converter Auto-Start function
+    if (sepic.status.flags.auto_start == true) {
+        sepic.status.flags.enabled = true;  // Auto-Enable power converter
+        sepic.status.flags.GO = true;       // Auto-Kick-off power converter
+    }
+    else { 
+        sepic.status.flags.GO = false; // Always Auto-Clear GO bit
+    }
+        
     return(1);
 }
 
@@ -211,16 +215,6 @@ void __attribute__((__interrupt__, auto_psv, context)) _ADCAN16Interrupt(void)
     c2p2z_sepic_Update(&c2p2z_sepic);
 
     _ADCAN16IF = 0;  // Clear the ADCANx interrupt flag 
-    
-}
-
-
-void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
-{
-        
-    sepic.data.v_ref = ADCBUF6;
-
-    _ADCAN6IF = 0;  // Clear the ADCANx interrupt flag 
     
 }
 
