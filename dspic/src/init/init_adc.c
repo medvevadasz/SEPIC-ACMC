@@ -281,9 +281,9 @@ volatile uint16_t launch_adc(void) {
     IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
     
      // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
-    _ADCAN6IP = 5;   // Interrupt Priority Level 5
+    _ADCAN6IP = 2;   // Interrupt Priority Level 5
     _ADCAN6IF = 0;    // Reset Interrupt Flag Bit
-    _ADCAN6IE = 0;    // Enable ADCAN6 Interrupt
+    _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt
     
     return(1);
 }

@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-volatile MY_DATA_POINTS_t data;
+//volatile MY_DATA_POINTS_t data;
 
 volatile uint16_t tgl_cnt = 0;  // local counter of LED toggle loops
 #define TGL_INTERVAL    2999     // LED toggle interval of (2999 + 1) x 100usec = 100ms
@@ -38,7 +38,7 @@ int main(void) {
     T1CONbits.TON = 1; 
     
     // Reset Soft-Start Phase to Initialization
-    sepic_soft_start.phase = SEPIC_SS_INIT;   
+    sepic.soft_start.phase = SEPIC_SS_INIT;   
     
     DBGPIN_2_CLEAR;
     DBGPIN_3_CLEAR;

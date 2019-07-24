@@ -46,17 +46,18 @@
 #include "init/init_pwm.h"
 
 #include "sepic_pwr_control.h"
-#include "sepic_pwr_control.h"
 
 
+// Remove: SEPIC power controller got its own data structure
+//typedef struct {
+//    volatile uint16_t vout_sepic;
+//    volatile uint16_t sepic_vref;
+//    volatile uint16_t manual_vref;
+//}MY_DATA_POINTS_t;
+//
+//extern volatile MY_DATA_POINTS_t data;
 
-typedef struct {
-    volatile uint16_t vout_sepic;
-    volatile uint16_t sepic_vref;
-    volatile uint16_t manual_vref;
-}MY_DATA_POINTS_t;
-
-extern volatile MY_DATA_POINTS_t data;
+extern volatile SEPIC_POWER_CONTROLLER_t sepic;
 
 #ifdef	__cplusplus
 extern "C" {
