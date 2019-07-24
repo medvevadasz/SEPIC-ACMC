@@ -35,8 +35,8 @@
 #include <xc.h> // include processor files - each processor file is guarded.  
 #include <stdint.h>
 #include <stdbool.h>
-#include <math.h>
 
+#include "globals.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -45,19 +45,8 @@ extern "C" {
 #define V_REF_MINIMUM       9.0  // lower output voltage limit in [V]
 #define V_REF_MAXIMUM       22.0 // upper output voltage limit in [V]
     
-#define V_SOURCE_R1         (2.0 * 2.87)    // Upper voltage divider resistor in kOhm
-#define V_SOURCE_R2         (1.0)           // Lower voltage divider resistor in kOhm
-#define V_FB_GAIN           (float)((V_SOURCE_R2) / (V_SOURCE_R1 + V_SOURCE_R2))
-    
-//#define V_REF_MINIMUM       1657 // reference value for 9V output voltage
-//#define V_REF_MAXIMUM       4051 // reference value for 22V output voltage
-    
-#define ADCREF              3.300 // ADC reference voltage in V
-#define ADCRES              12.0  // ADC resolution in [bit]
-#define ADCGRAN             (float)(ADCREF / pow(2.0, ADCRES))
-    
-#define V_REF_MIN           (uint16_t)(V_REF_MINIMUM * V_FB_GAIN / ADCGRAN)
-#define V_REF_MAX           (uint16_t)(V_REF_MAXIMUM * V_FB_GAIN / ADCGRAN)
+#define V_REF_MIN           (uint16_t)(V_REF_MINIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define V_REF_MAX           (uint16_t)(V_REF_MAXIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 #define V_REF_DIFF          (V_REF_MAX - V_REF_MIN)
     
     

@@ -27,26 +27,26 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_sepic_adc();        // Set up sepic converter ADC (voltage feedback only)
     init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
-    sepic.soft_start.counter = 0;                // Reset Soft-Start Counter
-    sepic.soft_start.pwr_on_delay = 4999;        // Soft-Start Power-On Delay = 500 ms
-    sepic.soft_start.ramp_period = 499;          // Soft-Start Ramp Period = 50 ms
-    sepic.soft_start.pwr_good_delay = 1999;      // Soft-Start Power Good Delay = 200 ms
-    sepic.soft_start.reference = 2204;           // Soft-Start Target Reference = 12V
+    sepic.soft_start.counter = 0;                             // Reset Soft-Start Counter
+    sepic.soft_start.pwr_on_delay = SEPIC_POWER_ON_DELAY;     // Soft-Start Power-On Delay = 500 ms
+    sepic.soft_start.ramp_period = SEPIC_RAMP_PERIOD;         // Soft-Start Ramp Period = 50 ms
+    sepic.soft_start.pwr_good_delay = SEPIC_POWER_GOOD_DELAY; // Soft-Start Power Good Delay = 200 ms
+    sepic.soft_start.reference = SEPIC_V_OUT_REF;             // Soft-Start Target Reference = 12V
+    sepic.soft_start.ramp_ref_increment = SEPIC_REF_STEP;     // Soft-Start Single Step Increment of Reference
     
     c2p2z_sepic_Init();
     
     c2p2z_sepic.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
-    c2p2z_sepic.ptrADCTriggerRegister = &PG3TRIGA;
-    c2p2z_sepic.InputOffset = 0;
+    c2p2z_sepic.ptrADCTriggerRegister = &ADCTRIG_VOUT;
+    c2p2z_sepic.InputOffset = ADC_INPUT_OFFSET;
     c2p2z_sepic.ptrControlReference = &sepic.data.v_ref;
-    c2p2z_sepic.ptrSource = &ADCBUF16;
-    c2p2z_sepic.ptrTarget = &DAC1DATH;
+    c2p2z_sepic.ptrSource = &ADCBUF_VOUT;
+    c2p2z_sepic.ptrTarget = &DAC_PCMC;
     c2p2z_sepic.MaxOutput = DAC_MAXIMUM;
     c2p2z_sepic.MinOutput = DAC_MINIMUM;
     c2p2z_sepic.status.flag.enable = 0;
     
     sepic.data.v_ref    = 0; // Reset SEPIC reference value (will be set via external potentiometer)
-//Remove:    data.manual_vref    = sepic.soft_start.reference;   // This is the initial reference for the controller after soft-start finished
     
     return(1);
 }
@@ -97,11 +97,17 @@ volatile uint16_t exec_sepic_pwr_control(void) {
         break;
         
         /*!SEPIC_SS_STANDBY
-         * This state is entered once all required peripherals have been launched the 
-         * power supply is waiting to be launched. This is also the standard fall-back 
-         * state after a fault condition.
-         * To get the power supply to start, all faults status bits need to be cleared
-         * and the status bit "sepic.status.flags" has to be set to "SEPIC_STAT_START"
+         * This state is entered once all required peripherals have been launched and the 
+         * power supply is waiting to be powered up. This is also the standard fall-back 
+         * state after a fault/restart condition.
+         * To get the power supply to start, all faults status bits need to be cleared,
+         * the ADC has to run and produce data, the power controller has to be enabled 
+         * and the status bit "sepic.status.flags.GO" has to be set.
+         * 
+         * Please note:
+         * The data structure sepic.status.flags also offers a setting called auto_start.
+         * When this bit is set, the 'enable' and 'GO' bits are set automatically and only
+         * the 'adc_active' and 'fault_active' bits are checked.
         */
         case SEPIC_SS_STANDBY: // Enabling PWM, ADC, CMP, DAC 
 
@@ -124,10 +130,9 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             break;
 
         /*!SEPIC_SS_PWR_ON_DELAY
-         * In this step the soft-start procedure continues with counting up 
-         * until the defined power-on delay period has expired. PWM1H is kept low.
-         * At the end of this phase, PWM1H output user override is disabled 
-         * and the control is enabled. */     
+         * In this step the soft-start procedure is counting up call intervals until
+         * the defined power-on delay period has expired. PWM and control loop are disabled.
+         * At the end of this phase, the state automatically switches to RAMP_UP mode */     
         case SEPIC_SS_PWR_ON_DELAY:  
 
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -142,6 +147,11 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             }
             break;    
                  
+        /*!SEPIC_SS_RAMP_UP
+         * During ramp up, the PWM and control loop are forced ON while the control reference is 
+         * incremented. Once the 'private' reference of the soft-start data structure equals the
+         * reference level set in sepic.data.v_ref, the ramp-up period ends and the state machine 
+         * automatically switches to POWER GOOD DELAY mode */     
         case SEPIC_SS_RAMP_UP: // Increasing reference by 4 every scheduler cycle
             
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -160,6 +170,10 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             }
             break; 
             
+        /*!SEPIC_SS_PWR_GOOD_DELAY
+         * POWER GOOD DELAY is just like POWER ON DELAY a state in which the soft-start counter
+         * is counting call intervals until the user defined period has expired. Then the state 
+         * machine automatically switches to COMPLETE mode */     
         case SEPIC_SS_PWR_GOOD_DELAY:
             
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -171,12 +185,20 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             }
             break;
                 
+        /*!SEPIC_SS_COMPLETE
+         * The COMPLETE phase is the default state of the power controller. Once entered, only a FAULT
+         * condition or external modifications of the soft-start phase can trigger a change of state. */     
         case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
             
             sepic.status.flags.op_status = SEPIC_STAT_ON; // Set SEPIC status to ON mode
             c2p2z_sepic.ptrControlReference = &sepic.data.v_ref; // hand reference control back
             break;
 
+        /*!SEPIC_SS_FAULT or undefined state
+         * If any controller state is set, different from the previous ones (e.g. FAULT),
+         * the power controller sets the FAULT flag bit, enforces detection of the ADC activity 
+         * by clearing the adc_active bit and switches the state machine into STANDBY, from
+         * which the power controller may recover as soon as all startup conditions are met again. */
         default: // If something is going wrong, reset PWR controller to STANDBY
 
             sepic.status.flags.op_status = SEPIC_STAT_FAULT; // Set SEPIC status to FAULT mode
@@ -188,7 +210,11 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
     }
         
-    // Power converter Auto-Start function
+    /*!Power Converter Auto-Start Function
+     * When the control bit sepic.status.flags.auto_start is set, the status bits 'enabled' 
+     * and 'GO' are automatically set and continuously enforced to ensure the power supply
+     * will enter RAMP UP from STANDBY without the need for user code intervention. */
+    // 
     if (sepic.status.flags.auto_start == true) {
         sepic.status.flags.enabled = true;  // Auto-Enable power converter
         sepic.status.flags.GO = true;       // Auto-Kick-off power converter
@@ -200,10 +226,15 @@ volatile uint16_t exec_sepic_pwr_control(void) {
     return(1);
 }
 
-void __attribute__((__interrupt__, auto_psv, context)) _ADCAN16Interrupt(void)
+/*!Power Converter Auto-Start Function
+ * **************************************************************************************************
+ * 
+ * **************************************************************************************************/
+
+void __attribute__((__interrupt__, auto_psv, context))_VOUT_ADCInterrupt(void)
 {
     sepic.status.flags.adc_active = true;
-    sepic.data.v_out = ADCBUF16;
+    sepic.data.v_out = ADCBUF_VOUT;
 
     c2p2z_sepic_Update(&c2p2z_sepic);
 

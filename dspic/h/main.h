@@ -36,29 +36,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// List of user included header files
-#include "init/init_fosc.h"
-#include "init/init_timer1.h"
-#include "init/init_gpio.h"
-
-#include "init/init_acmp.h"
-#include "init/init_adc.h"
-#include "init/init_pwm.h"
-
-#include "sepic_pwr_control.h"
-#include "ext_reference.h"
-
-
-// Remove: SEPIC power controller got its own data structure
-//typedef struct {
-//    volatile uint16_t vout_sepic;
-//    volatile uint16_t sepic_vref;
-//    volatile uint16_t manual_vref;
-//}MY_DATA_POINTS_t;
-//
-//extern volatile MY_DATA_POINTS_t data;
-
-extern volatile SEPIC_POWER_CONTROLLER_t sepic;
+#include "globals.h"
 
 #ifdef	__cplusplus
 extern "C" {

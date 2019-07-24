@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "globals.h"
 #include "init_timer1.h"   
 
 volatile uint16_t init_timer1 (void)
@@ -28,7 +29,7 @@ volatile uint16_t init_timer1 (void)
     // Reset Timer Counter Register TMR to Zero; 
     TMR1 = 0x00;
     //Period = 0.0001 s; Frequency = 100000000 Hz; PR 9999; 
-    PR1 = 9999;
+    PR1 = MAIN_EXEC_PER;
     // Reset interrupt and interrupt flag bit
     _T1IP = 0;  // Set interrupt priority to zero
     _T1IF = 0;  // Reset interrupt flag bit

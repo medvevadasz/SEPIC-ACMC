@@ -42,6 +42,15 @@
 extern "C" {
 #endif /* __cplusplus */
 
+// Hardware-dependent defines
+#define _VOUT_ADCInterrupt      _ADCAN16Interrupt   
+#define ADCBUF_VOUT             ADCBUF16
+#define ADCTRIG_VOUT            PG3TRIGA
+#define ADC_INPUT_OFFSET        0
+
+#define DAC_PCMC                DAC1DATH
+
+    
 // ==============================================================================================
 // SEPIC converter operation status bits data structure and defines
 // ==============================================================================================
@@ -84,16 +93,15 @@ typedef enum {
 }SEPIC_SOFT_START_STATUS_e;
 
 typedef struct {
-    volatile uint16_t reference;        // Soft-Start target reference value
-    volatile uint16_t pwr_on_delay;     // Soft-Start POwer On Delay
-    volatile uint16_t precharge_delay;  // Soft-Start Bootstrap Capacitor pre-charge delay
-    volatile uint16_t ramp_period;      // Soft-Start Ramp-Up Duration
-    volatile uint16_t pwr_good_delay;   // Soft-Start Power Good Delay
-    volatile uint16_t counter;          // Soft-Start Execution Counter
-    volatile uint16_t phase;            // Soft-Start Phase Index
-}SEPIC_SOFT_START_t;                    // SEPIC soft-start settings and variables
-
-//extern volatile SEPIC_SOFT_START_t sepic_soft_start;
+    volatile uint16_t reference;            // Soft-Start target reference value
+    volatile uint16_t pwr_on_delay;         // Soft-Start POwer On Delay
+    volatile uint16_t precharge_delay;      // Soft-Start Bootstrap Capacitor pre-charge delay
+    volatile uint16_t ramp_period;          // Soft-Start Ramp-Up Duration
+    volatile uint16_t ramp_ref_increment;   // Soft-Start Single Reference Increment per Step
+    volatile uint16_t pwr_good_delay;       // Soft-Start Power Good Delay
+    volatile uint16_t counter;              // Soft-Start Execution Counter
+    volatile uint16_t phase;                // Soft-Start Phase Index
+}SEPIC_SOFT_START_t;                        // SEPIC soft-start settings and variables
 
 // ==============================================================================================
 // SEPIC converter soft-start settings data structure and defines
@@ -112,8 +120,6 @@ typedef struct {
     volatile SEPIC_CONVERTER_DATA_t data;     // SEPIC runtime data
 }SEPIC_POWER_CONTROLLER_t;                    // SEPIC control & monitoring data structure
 
-// Remove: soft-start settings are now part of the global SEPIC data structure
-//extern volatile SEPIC_SOFT_START_t sepic_soft_start;
 
 // ==============================================================================================
 // SEPIC converter public function prototypes
