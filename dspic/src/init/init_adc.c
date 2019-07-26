@@ -146,7 +146,7 @@ volatile uint16_t init_vin_adc(void) {
     return(1);
 }
 
-volatile uint16_t init_sepic_adc(void) {
+volatile uint16_t init_vout_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
     ANSELCbits.ANSELC7 = 1; // Analog input is enabled and digital input is disabled for RC7 (Sepic converter output voltage feedback)
@@ -196,7 +196,7 @@ volatile uint16_t init_sepic_adc(void) {
     return(1);
 }
 
-volatile uint16_t init_pot_adc(void) {
+volatile uint16_t init_ref_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
     ANSELBbits.ANSELB1 = 1; // Analog input is enabled and digital input is disabled for RB1 (Potentiometer input)
@@ -251,6 +251,56 @@ volatile uint16_t init_pot_adc(void) {
     return(1);
 }
 
+volatile uint16_t init_iin_adc(void) {
+
+    // ANSELx: ANALOG SELECT FOR PORTx REGISTER
+    ANSELAbits.ANSELA0 = 1; TRISAbits.TRISA0 = 1; // Analog input is enabled and digital input is disabled for RA0 (CS_OPA input)
+    
+    // ADLVLTRGL: ADC LEVEL-SENSITIVE TRIGGER CONTROL REGISTER LOW
+    ADLVLTRGLbits.LVLEN0 = 0; // Input trigger is edge-sensitive
+
+    // ADMOD0L: ADC INPUT MODE CONTROL REGISTER 0 LOW
+    ADMOD0Lbits.DIFF0 = 0; // Differential-Mode for Corresponding Analog Inputs: Channel is single-ended
+    ADMOD0Lbits.SIGN0 = 0; // Output Data Sign for Corresponding Analog Inputs: Channel output data are unsigned
+    
+    // ADEIEL: ADC EARLY INTERRUPT ENABLE REGISTER LOW
+    ADEIELbits.EIEN0 = 1; // Early interrupt is enabled for the channel
+    
+    // ADIEL: ADC INTERRUPT ENABLE REGISTER LOW
+    ADIELbits.IE0 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
+    
+    // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
+    ADTRIG0Lbits.TRGSRC0 = 0b00100; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 1 (the same for starting ramp generation)
+    
+    // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
+    ADCMP1CONbits.CHNL = 0;  // Input Channel Number: 0=AN0
+    ADCMP1CONbits.CMPEN = 0; // Comparator Enable: Comparator is disabled
+    ADCMP1CONbits.IE = 0; // Comparator Common ADC Interrupt Enable: Common ADC interrupt will not be generated for the comparator
+    ADCMP1CONbits.BTWN = 0; // Between Low/High Comparator Event: Disabled
+    ADCMP1CONbits.HIHI = 0; // High/High Comparator Event: Disabled
+    ADCMP1CONbits.HILO = 0; // High/Low Comparator Event: Disabled
+    ADCMP1CONbits.LOHI = 0; // Low/High Comparator Event: Disabled
+    ADCMP1CONbits.LOLO = 0; // Low/Low Comparator Event: Disabled
+   
+    // ADCMPxENL: ADC DIGITAL COMPARATOR x CHANNEL ENABLE REGISTER LOW
+    ADCMP1ENLbits.CMPEN0 = 0; // Comparator Enable for Corresponding Input Channels: AN0 Disabled
+    
+    // ADCMPxLO: ADC COMPARARE REGISTER LOWER THRESHOLD VALUE REGISTER
+    ADCMP1LO = 0; // G=1; 0Vpot=0 ADC ticks
+
+    // ADCMPxHI: ADC COMPARARE REGISTER UPPER THRESHOLD VALUE REGISTER
+    ADCMP1HI = 3722; // G=1; 3Vpot=3722 ADC ticks
+    
+    // ADFLxCON: ADC DIGITAL FILTER x CONTROL REGISTER
+    ADFL1CONbits.FLEN = 0; // Filter Enable: Filter is disabled
+    ADFL1CONbits.MODE = 0b11; // Filter Mode: Averaging mode (always 12-bit result 7 in oversampling mode 12-16bit wide)
+    ADFL1CONbits.OVRSAM = 0b001; // Filter Averaging/Oversampling Ratio: 16x (result in the ADFLxDAT)
+    ADFL1CONbits.IE = 0; // Filter Common ADC Interrupt Enable: Common ADC interrupt will not be generated for the filter
+    ADFL1CONbits.FLCHSEL = 0; // Oversampling Filter Input Channel Selection: 0=AN0
+
+    return(1);
+}
+
 volatile uint16_t launch_adc(void) {
 
     volatile uint16_t timeout=0;
@@ -265,10 +315,10 @@ volatile uint16_t launch_adc(void) {
     if((!ADCON5Lbits.SHRRDY) || (timeout>=ADC_POWRUP_TIMEOUT)) return(0);
     ADCON3Hbits.SHREN  = 1; // Enable Shared ADC digital circuitry
         
-    ADCON5Lbits.C0PWR = 0; // Dedicated ADC Core 0 Power Enable: ADC core is off
-//    while((!ADCON5Lbits.C0RDY) && (timeout++<ADC_POWRUP_TIMEOUT));
-//    if((!ADCON5Lbits.C0RDY) || (timeout>=ADC_POWRUP_TIMEOUT)) return(0);
-    ADCON3Hbits.C0EN  = 0; // Dedicated Core 0 is not enabled
+    ADCON5Lbits.C0PWR = 1; // Dedicated ADC Core 0 Power Enable: ADC core is on
+    while((!ADCON5Lbits.C0RDY) && (timeout++<ADC_POWRUP_TIMEOUT));
+    if((!ADCON5Lbits.C0RDY) || (timeout>=ADC_POWRUP_TIMEOUT)) return(0);    // ToDo: ADC_POWRUP_TIMEOUT is exceeded unless in debug mode
+    ADCON3Hbits.C0EN  = 1; // Dedicated Core 0 is enabled
 
     ADCON5Lbits.C1PWR = 0; // Dedicated ADC Core 1 Power Enable: ADC core is off
 //    while((!ADCON5Lbits.C1RDY) && (timeout++<ADC_POWRUP_TIMEOUT));
@@ -283,7 +333,12 @@ volatile uint16_t launch_adc(void) {
      // INITIALIZE AN16 INTERRUPTS (SEPIC Output Voltage)
     IPC26bits.ADCAN16IP = 5;   // Interrupt Priority Level 5
     IFS6bits.ADCAN16IF = 0;    // Reset Interrupt Flag Bit
-    IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
+    IEC6bits.ADCAN16IE = 0;    // Disable ADCAN16 Interrupt 
+    
+    // INITIALIZE AN0 INTERRUPTS (SEPIC Input Current)
+    _ADCAN0IP = 5;
+    _ADCAN0IF = 0;
+    _ADCAN0IE = 1;
     
     
     return(1);

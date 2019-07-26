@@ -36,7 +36,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "c2p2z_sepic.h"
+#include "c2p2z_sepic_voltage.h"
+#include "c2p2z_sepic_current.h"
 
 #ifdef	__cplusplus
 extern "C" {

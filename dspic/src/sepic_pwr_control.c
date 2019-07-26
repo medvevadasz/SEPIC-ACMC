@@ -24,8 +24,10 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_sepic_trig_pwm();   // Set up auxiliary PWM for sepic converter
     init_sepic_pwm();        // Set up sepic converter PWM
     init_sepic_acmp();       // Set up sepic converter peak current comparator/DAC
-    init_sepic_adc();        // Set up sepic converter ADC (voltage feedback only)
-    init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
+    init_vout_adc();         // Set up sepic converter ADC (voltage feedback only)
+    init_vin_adc();          // Initialize ADC Channel to measure input voltage
+    init_iin_adc();          // Initialize ADC Channel for the current loop
+    init_ref_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
     sepic.soft_start.counter = 0;                             // Reset Soft-Start Counter
     sepic.soft_start.pwr_on_delay = SEPIC_POWER_ON_DELAY;     // Soft-Start Power-On Delay = 500 ms
@@ -34,17 +36,28 @@ volatile uint16_t init_sepic_pwr_control(void) {
     sepic.soft_start.reference = SEPIC_V_OUT_REF;             // Soft-Start Target Reference = 12V
     sepic.soft_start.ramp_ref_increment = SEPIC_REF_STEP;     // Soft-Start Single Step Increment of Reference
     
-    c2p2z_sepic_Init();
+    c2p2z_sepic_current_Init();
+    c2p2z_sepic_voltage_Init();
     
-    c2p2z_sepic.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
-    c2p2z_sepic.ptrADCTriggerRegister = &ADCTRIG_VOUT;
-    c2p2z_sepic.InputOffset = ADC_INPUT_OFFSET;
-    c2p2z_sepic.ptrControlReference = &sepic.data.v_ref;
-    c2p2z_sepic.ptrSource = &ADCBUF_VOUT;
-    c2p2z_sepic.ptrTarget = &DAC_PCMC;
-    c2p2z_sepic.MaxOutput = DAC_MAXIMUM;
-    c2p2z_sepic.MinOutput = DAC_MINIMUM;
-    c2p2z_sepic.status.flag.enable = 0;
+    c2p2z_sepic_current.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
+    c2p2z_sepic_current.ptrADCTriggerRegister = &ADCTRIG_VOUT;
+    c2p2z_sepic_current.InputOffset = ADC_INPUT_OFFSET;
+    c2p2z_sepic_current.ptrControlReference = &sepic.data.v_ref;
+    c2p2z_sepic_current.ptrSource = &ADCBUF_VOUT;
+    c2p2z_sepic_current.ptrTarget = &DAC_PCMC;
+    c2p2z_sepic_current.MaxOutput = DAC_MAXIMUM;
+    c2p2z_sepic_current.MinOutput = DAC_MINIMUM;
+    c2p2z_sepic_current.status.flag.enable = 0;
+    
+    c2p2z_sepic_voltage.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
+    c2p2z_sepic_voltage.ptrADCTriggerRegister = &ADCTRIG_VOUT;
+    c2p2z_sepic_voltage.InputOffset = ADC_INPUT_OFFSET;
+    c2p2z_sepic_voltage.ptrControlReference = &sepic.data.v_ref;
+    c2p2z_sepic_voltage.ptrSource = &ADCBUF_VOUT;
+    c2p2z_sepic_voltage.ptrTarget = &DAC_PCMC;
+    c2p2z_sepic_voltage.MaxOutput = DAC_MAXIMUM;
+    c2p2z_sepic_voltage.MinOutput = DAC_MINIMUM;
+    c2p2z_sepic_voltage.status.flag.enable = 0;
     
     sepic.data.v_ref    = 0; // Reset SEPIC reference value (will be set via external potentiometer)
     
@@ -59,7 +72,8 @@ volatile uint16_t launch_sepic_pwr_control(void) {
     launch_sepic_trig_pwm();    // Start auxiliary PWM 
     launch_sepic_pwm();         // Start PWM
     
-    c2p2z_sepic_Reset(&c2p2z_sepic);    // Reset control loop histories
+    c2p2z_sepic_current_Reset(&c2p2z_sepic_current);    // Reset current control loop histories
+    c2p2z_sepic_voltage_Reset(&c2p2z_sepic_voltage);    // Reset voltage control loop histories
     
     return(1);
 }

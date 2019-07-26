@@ -1,6 +1,6 @@
 [GUI]
-CreateDate=7/19/2019 6:19:39 PM
-SaveDate=7/26/2019 1:35:16 PM
+CreateDate=7/26/2019 1:36:01 PM
+SaveDate=7/26/2019 1:36:24 PM
 Name=z-Domain Control Loop Designer
 Version=0.9.0.60
 WindoWState=Maximized
@@ -16,6 +16,7 @@ QFormat=1
 SamplingFrequency=350k
 InputGain=0.148
 InputGainNormalization=1
+BiDirectionalFeedback=0
 FrequencyP0=300
 FrequencyP1=60k
 FrequencyZ1=300
@@ -30,10 +31,9 @@ FrequencyZ5=50000
 InputDataResolution=12
 FixedPointErrorMsg=0.5
 FixedPointErrorWarning=0.1
-BiDirectionalFeedback=0
 [AssemblyGenerator]
 UserPrefix1=c2p2z
-UserPrefix2=_sepic_voltage
+UserPrefix2=_sepic_current
 UseUserPrefix=1
 UseUserPrefixVar=1
 ContextSaving=0
@@ -50,9 +50,9 @@ AddShadowCopyControlInput=0
 AddShadowCopyErrorInput=0
 AddShadowCopyControlOutput=0
 AntiWindup=1
+AntiWindupSoftDesaturation=0
 AddAntiWindupMaximumClamping=1
 AddAntiWindupMinimumClamping=1
-AntiWindupSoftDesaturation=0
 [CodeGenerationPaths]
 ExportASMSource=1
 ExportCSource=1

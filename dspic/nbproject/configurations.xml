@@ -5,8 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="control" projectFiles="true">
-        <itemPath>h/c2p2z_sepic.h</itemPath>
-        <itemPath>h/npnz16b.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="init" projectFiles="true">
         <itemPath>h/init/init_fosc.h</itemPath>
@@ -17,9 +15,12 @@
         <itemPath>h/init/init_adc.h</itemPath>
       </logicalFolder>
       <itemPath>h/main.h</itemPath>
+      <itemPath>h/npnz16b.h</itemPath>
       <itemPath>h/sepic_pwr_control.h</itemPath>
       <itemPath>h/ext_reference.h</itemPath>
       <itemPath>h/globals.h</itemPath>
+      <itemPath>h/c2p2z_sepic_current.h</itemPath>
+      <itemPath>h/c2p2z_sepic_voltage.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -29,8 +30,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f2" displayName="control" projectFiles="true">
-        <itemPath>src/c2p2z_sepic.c</itemPath>
-        <itemPath>src/c2p2z_sepic_asm.s</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="init" projectFiles="true">
         <itemPath>src/init/init_fosc.c</itemPath>
@@ -45,13 +44,18 @@
       <itemPath>src/sepic_pwr_control.c</itemPath>
       <itemPath>src/ext_reference.c</itemPath>
       <itemPath>src/globals.c</itemPath>
+      <itemPath>src/c2p2z_sepic_current.c</itemPath>
+      <itemPath>src/c2p2z_sepic_current_asm.s</itemPath>
+      <itemPath>src/c2p2z_sepic_voltage.c</itemPath>
+      <itemPath>src/c2p2z_sepic_voltage_asm.s</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
-      <itemPath>sepic_ctrl.dcld</itemPath>
       <itemPath>short_description</itemPath>
+      <itemPath>sepic_ctrl_current.dcld</itemPath>
+      <itemPath>sepic_ctrl_voltage.dcld</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
