@@ -12,16 +12,14 @@
 
 #include "main.h"
 
-//volatile MY_DATA_POINTS_t data;
-
 volatile uint16_t tgl_cnt = 0;  // local counter of LED toggle loops
-#define TGL_INTERVAL    2999     // LED toggle interval of (2999 + 1) x 100usec = 100ms
+#define TGL_INTERVAL    2999    // LED toggle interval of (2999 + 1) x 100usec = 100ms
 #define TMR1_TIMEOUT    30000   // Timeout protection for Timer1 interrupt flag bit
 
 int main(void) {
 
     volatile uint16_t timeout = 0;
-    
+     
     init_fosc();        // Set up system oscillator for 100 MIPS operation
     init_aclk();        // Set up Auxiliary PLL for 500 MHz (source clock to PWM module)
     init_timer1();      // Set up Timer1 as scheduler time base
@@ -38,6 +36,18 @@ int main(void) {
     // Reset Soft-Start Phase to Initialization
     sepic.soft_start.phase = SEPIC_SS_INIT;   
     sepic.status.flags.auto_start = true;
+    
+// ===========================================
+ // ToDo: FOR DEBUGGING ONLY! REMOVE WHEN DONE
+// ===========================================
+    // Comparator output = RB11(RP43) = TP41 on DP DevBoard
+    __builtin_write_RPCON(0x0000);
+    _TRISB11 = 0;
+    _LATB11 = 0;
+    RPOR5bits.RP43R = 23;      // Assign COMP1 (=23) output to pin RB11 = RP43  (DSP_GPIO3)
+__builtin_write_RPCON(0x0800);
+// ===========================================
+    
     
     // Enable Timer1
     T1CONbits.TON = 1; 
@@ -61,6 +71,7 @@ int main(void) {
             tgl_cnt = 0;
         } // Toggle LED and reset toggle counter
         Nop();
+        
     }
 
 

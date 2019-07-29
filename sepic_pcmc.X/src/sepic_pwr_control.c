@@ -10,14 +10,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "main.h"
-#include "npnz16b.h"
+#include "globals.h"
 
 volatile SEPIC_POWER_CONTROLLER_t sepic;
-
-// Remove: volatile bool adc_active = false;
-// Remove: soft start settings are now part of the SEPIC data structure
-//volatile sepic.soft_start_t sepic.soft_start;
 
 volatile uint16_t init_sepic_pwr_control(void) {
     
@@ -37,13 +32,13 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic_Init();
     
     c2p2z_sepic.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
-    c2p2z_sepic.ptrADCTriggerRegister = &ADCTRIG_VOUT;
-    c2p2z_sepic.InputOffset = ADC_INPUT_OFFSET;
+    c2p2z_sepic.ptrADCTriggerRegister = &SEPIC_VOUT_ADCTRIG;
+    c2p2z_sepic.InputOffset = SEPIC_VOUT_FEEDBACK_OFFSET;
     c2p2z_sepic.ptrControlReference = &sepic.data.v_ref;
-    c2p2z_sepic.ptrSource = &ADCBUF_VOUT;
-    c2p2z_sepic.ptrTarget = &DAC_PCMC;
-    c2p2z_sepic.MaxOutput = DAC_MAXIMUM;
-    c2p2z_sepic.MinOutput = DAC_MINIMUM;
+    c2p2z_sepic.ptrSource = &SEPIC_VOUT_ADCBUF;
+    c2p2z_sepic.ptrTarget = &SEPIC_DAC_VREF_REGISTER;
+    c2p2z_sepic.MaxOutput = DAC_MAX;
+    c2p2z_sepic.MinOutput = DAC_MIN;
     c2p2z_sepic.status.flag.enable = 0;
     
     sepic.data.v_ref    = 0; // Reset SEPIC reference value (will be set via external potentiometer)
@@ -231,10 +226,10 @@ volatile uint16_t exec_sepic_pwr_control(void) {
  * 
  * **************************************************************************************************/
 
-void __attribute__((__interrupt__, auto_psv, context))_VOUT_ADCInterrupt(void)
+void __attribute__((__interrupt__, auto_psv, context))_SEPIC_VOUT_ADCInterrupt(void)
 {
     sepic.status.flags.adc_active = true;
-    sepic.data.v_out = ADCBUF_VOUT;
+    sepic.data.v_out = SEPIC_VOUT_ADCBUF;
 
     c2p2z_sepic_Update(&c2p2z_sepic);
 

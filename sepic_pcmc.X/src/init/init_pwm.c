@@ -111,7 +111,7 @@ volatile uint16_t init_sepic_pwm(void) {
     PG1CONLbits.TRGCNT = 0b000; // Trigger Count Select: PWM Generator produces one PWM cycle after triggered
     PG1CONLbits.HREN = 0; // High-Resolution mode is not enabled for PWM Generator 1
     PG1CONLbits.CLKSEL = 0b01; // Clock Selection: PWM Generator uses Master clock selected by the MCLKSEL[1:0] (PCLKCON[1:0]) control bits
-    PG1CONLbits.MODSEL = 0b000; // PWM Mode Selection: Independent Edge PWM mode
+    PG1CONLbits.MODSEL = 0b001; // PWM Mode Selection: Variable Phase PWM mode
     
     PG1CONHbits.MDCSEL = 0; // Master Duty Cycle Register Selection: PWM Generator uses PGxDC register
     PG1CONHbits.MPERSEL = 1; // Master Period Register Selection: PWM Generator uses MPER register
@@ -174,19 +174,19 @@ volatile uint16_t init_sepic_pwm(void) {
     PG1CLPCIHbits.ACP       = 0b011;        // PCI Acceptance Mode: Latched
     PG1CLPCIHbits.SWPCI     = 0b0;          // Drives a '0' to PCI logic assigned to by the SWPCIM<1:0> control bits
     PG1CLPCIHbits.SWPCIM    = 0b00;         // SWPCI bit is assigned to PCI acceptance logic
-    PG1CLPCIHbits.PCIGT     = 0b0;          // SR latch is Set-dominant in Latched Acceptance modes
-    PG1CLPCIHbits.TQPS      = 0b0;          // Termination Qualifier not inverted
-    PG1CLPCIHbits.TQSS      = 0b000;        // No termination qualifier used so terminator will work straight away without any qualifier
+    PG1CLPCIHbits.PCIGT     = 0b1;          // SR latch is Reset-dominant in Latched Acceptance modes
+    PG1CLPCIHbits.TQPS      = 0b1;          // Termination Qualifier (0= not inverted, 1= inverted)
+    PG1CLPCIHbits.TQSS      = 0b100;        // No termination qualifier used so terminator will work straight away without any qualifier
     
     // PGCLPCIL: PWM GENERATOR CL PCI REGISTER LOW
     PG1CLPCILbits.TSYNCDIS  = 0;            // Termination of latched PCI occurs at PWM EOC
     PG1CLPCILbits.TERM      = 0b001;        // Termination Event: Terminate when Comparator 3 output transitions from active to inactive
-    PG1CLPCILbits.AQPS      = 0b1;          // Acceptance Qualifier (LEB) signal is inverted 
-    PG1CLPCILbits.AQSS      = 0b010;        // Acceptance Qualifier: LEB 
+    PG1CLPCILbits.AQPS      = 0b0;          // Acceptance Qualifier (LEB) signal is inverted 
+    PG1CLPCILbits.AQSS      = 0b100;        // Acceptance Qualifier: PWM Generator output selected by PWMPCI 
     PG1CLPCILbits.SWTERM    = 0b0;          // A write of '1' to this location will produce a termination event. This bit location always reads as '0'.
     PG1CLPCILbits.PSYNC     = 0;            // PCI source is not synchronized to PWM EOC
     PG1CLPCILbits.PPS       = 0;            // Non-inverted PCI polarity
-    PG1CLPCILbits.PSS       = 0b11011;      // Selecting Comparator 3 output as PCI input
+    PG1CLPCILbits.PSS       = 0b11011;      // Selecting Comparator 1 output as PCI input
 //    PG1CLPCILbits.PSS       = 0b00000;      // PCI is DISABLED
     
     // Reset further PCI control registers
@@ -198,7 +198,7 @@ volatile uint16_t init_sepic_pwm(void) {
     PG1SPCIL        = 0x0000;          // PWM GENERATOR S PCI REGISTER LOW
     
     // PWM GENERATOR x LEADING-EDGE BLANKING REGISTER HIGH 
-    PG1LEBHbits.PWMPCI      = 0b000;        // PWM Generator #1 output is made available to PCI logic
+    PG1LEBHbits.PWMPCI      = 0b010;        // PWM Generator #3 output is made available to PCI logic
     PG1LEBHbits.PHR         = 0b1;          // Rising edge of PWM1H will trigger the LEB duration counter
     PG1LEBHbits.PHF         = 0b0;          // LEB ignores the falling edge of PWM1H
     PG1LEBHbits.PLR         = 0b0;          // LEB ignores the rising edge of PWM1L
@@ -208,7 +208,7 @@ volatile uint16_t init_sepic_pwm(void) {
     PG1LEBL                 = LEB_PERIOD;   // ToDo: This value may need further adjustment
     
     // PGxPHASE: PWM GENERATOR x PHASE REGISTER
-    PG1PHASE    = 0;
+    PG1PHASE    = 50;
     
     // PGxDC: PWM GENERATOR x DUTY CYCLE REGISTER
     PG1DC       = MAX_DUTY_CYCLE;     
@@ -261,7 +261,7 @@ volatile uint16_t init_sepic_trig_pwm(void) {
     PG3CONLbits.TRGCNT = 0b000; // Trigger Count Select: PWM Generator produces one PWM cycle after triggered
     PG3CONLbits.HREN = 0; // High-Resolution mode is not enabled for PWM Generator x
     PG3CONLbits.CLKSEL = 0b01; // Clock Selection: PWM Generator uses Master clock selected by the MCLKSEL[1:0] (PCLKCON[1:0]) control bits
-    PG3CONLbits.MODSEL = 0b000; // PWM Mode Selection: Independent Edge PWM mode
+    PG3CONLbits.MODSEL = 0b001; // PWM Mode Selection: Variable Phase PWM mode
     
     PG3CONHbits.MDCSEL = 0; // Master Duty Cycle Register Selection: PWM Generator uses PGxDC register
     PG3CONHbits.MPERSEL = 1; // Master Period Register Selection: PWM Generator uses MPER register
@@ -323,10 +323,10 @@ volatile uint16_t init_sepic_trig_pwm(void) {
     
         
     // PGxPHASE: PWM GENERATOR x PHASE REGISTER
-    PG3PHASE    = 0;
+    PG3PHASE    = 100;
     
     // PGxDC: PWM GENERATOR x DUTY CYCLE REGISTER
-    PG3DC       = 800;      
+    PG3DC       = MAX_DUTY_CYCLE - 100;      
     
     // PGxDCA: PWM GENERATOR x DUTY CYCLE ADJUSTMENT REGISTER
     PG3DCA      =  0x0000;      
@@ -364,7 +364,7 @@ volatile uint16_t launch_sepic_trig_pwm(void) {
     while(PG3STATbits.UPDATE);
     PG3STATbits.UPDREQ = 1; // Update all PWM registers
 
-    PG3IOCONHbits.PENH = 0; // PWMxH Output Port Enable: Disabled
+    PG3IOCONHbits.PENH = 1; // PWMxH Output Port Enable: Disabled
     PG3IOCONHbits.PENL = 0; // PWMxL Output Port Enable: Disabled
     PG3IOCONLbits.OVRENH = 0;  // User Override Enable for PWMxH Pin: User override disabled
     PG3IOCONLbits.OVRENL = 0;  // User Override Enable for PWMxL Pin: User override disabled

@@ -42,15 +42,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-// Hardware-dependent defines
-#define _VOUT_ADCInterrupt      _ADCAN16Interrupt   
-#define ADCBUF_VOUT             ADCBUF16
-#define ADCTRIG_VOUT            PG3TRIGA
-#define ADC_INPUT_OFFSET        0
-
-#define DAC_PCMC                DAC1DATH
-
-    
 // ==============================================================================================
 // SEPIC converter operation status bits data structure and defines
 // ==============================================================================================

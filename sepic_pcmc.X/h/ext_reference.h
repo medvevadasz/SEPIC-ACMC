@@ -48,8 +48,8 @@ extern "C" {
 #define V_REF_MIN           (uint16_t)(V_REF_MINIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 #define V_REF_MAX           (uint16_t)(V_REF_MAXIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 #define V_REF_DIFF          (V_REF_MAX - V_REF_MIN)
-    
-    
+
+
 extern volatile uint16_t ext_reference_init(void);
 
 

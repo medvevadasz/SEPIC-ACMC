@@ -36,7 +36,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "main.h"
+#include "globals.h"
 
 #ifdef _SEPIC_wCKDPPIM_
     // Red LED on CK_DP_PIM

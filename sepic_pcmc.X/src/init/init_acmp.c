@@ -13,14 +13,12 @@
 #include "init_acmp.h"
 
 
-
 volatile uint16_t init_acmp_module(void) {
 
     // Make sure power is turned on to comparator module #1 & #2
     PMD7bits.CMP1MD = 0; // Comparator 1 Module Power Disable: Comparator 1 module is enabled
-//    PMD7bits.CMP2MD = 0; // Comparator 2 Module Power Disable: Comparator 2 module is enabled
-//    PMD7bits.CMP3MD = 0; // Comparator 3 Module Power Disable: Comparator 3 module is enabled
-    
+    PMD7bits.CMP2MD = 0; // Comparator 2 Module Power Disable: Comparator 2 module is enabled
+    PMD7bits.CMP3MD = 0; // Comparator 3 Module Power Disable: Comparator 3 module is enabled
     
     // Turn off all Comparator/DAC modules during configuration
     DACCTRL1Lbits.DACON = 0; // Common DAC Module Enable: Disables all DAC modules
@@ -41,9 +39,8 @@ volatile uint16_t init_acmp_module(void) {
     DACCTRL1Lbits.FCLKDIV = 0b000; // Comparator Filter Clock Divider: Divider = 1:1
     
     // DACCTRL2H/L: DAC CONTROL 2 HIGH and DAC CONTROL 2 LOW REGISTER
-    // Settings = 2 x 
-    DACCTRL2Lbits.TMODTIME = (TMOD_DURATION  & 0x03FF); // Transition Mode Duration (default 0x55 = 340ns @ 500 MHz)
-    DACCTRL2Hbits.SSTIME = (SS_DURATION & 0x0FFF); // Time from Start of Transition Mode until Steady-State Filter is Enabled (default 0x8A = 552ns @ 500 MHz)
+    DACCTRL2Lbits.TMODTIME = (DAC_TMODTIME  & 0x03FF); // Transition Mode Duration (default 0x55 = 340ns @ 500 MHz)
+    DACCTRL2Hbits.SSTIME = (DAC_SSTIME & 0x0FFF); // Time from Start of Transition Mode until Steady-State Filter is Enabled (default 0x8A = 552ns @ 500 MHz)
     
     return(1);
 }
@@ -58,15 +55,15 @@ volatile uint16_t init_sepic_acmp(void) {
     DAC1CONLbits.FLTREN = 0; // Comparator Digital Filter Enable: Digital filter is disabled
     // DAC1CONLbits.CMPSTAT (read only bit)
     DAC1CONLbits.CMPPOL = 0; // Comparator Output Polarity Control: Output is non-inverted
-    DAC1CONLbits.INSEL = 0b001; // Comparator Input Source Select: feedback is connected to CMPxB input pin
+    DAC1CONLbits.INSEL = 0b000; // Comparator Input Source Select: feedback is connected to CMPxB input pin
     DAC1CONLbits.HYSPOL = 0; // Comparator Hysteresis Polarity Selection: Hysteresis is applied to the rising edge of the comparator output
-    DAC1CONLbits.HYSSEL = 0b11; // Comparator Hysteresis Selection: 45 mv hysteresis (0 = 0mV, 1 = 15mV, 2 = 30mV, 3 = 45mV)
+    DAC1CONLbits.HYSSEL = 0b00; // Comparator Hysteresis Selection: 45 mv hysteresis (0 = 0mV, 1 = 15mV, 2 = 30mV, 3 = 45mV)
     
     // DACxCONH: DACx CONTROL HIGH REGISTER
     
     // ***********************************************
     // ToDo: CHECK DAC LEB PERIOD TO BE CORRECT AND DOESN'T CREATE CONFLICTS
-    DAC1CONHbits.TMCB = LEB_PER_COMP; // DACx Leading-Edge Blanking: period for the comparator
+    DAC1CONHbits.TMCB = DAC_TMCB; // DACx Leading-Edge Blanking: period for the comparator
     // ***********************************************
         
     // DACxDATH: DACx DATA HIGH REGISTER
@@ -81,20 +78,12 @@ volatile uint16_t init_sepic_acmp(void) {
     
     // SLPxCONL: DACx SLOPE CONTROL LOW REGISTER
     SLP1CONLbits.HCFSEL = 0b0000; // Hysteretic Comparator Function Input Selection: (none)
-    SLP1CONLbits.SLPSTOPA = 0b0001; // Slope Stop A Signal Selection: PWM1 Trigger 2
+    SLP1CONLbits.SLPSTOPA = 0b0001; // Slope Stop A Signal Selection: PWM1 Trigger 2 => PGxTRIGB
     SLP1CONLbits.SLPSTOPB = 0b0001; // Slope Stop B Signal Selection: CMP1 Out
-//    SLP1CONLbits.SLPSTOPB = 0b0000; // Slope Stop B Signal Selection: 0
-    SLP1CONLbits.SLPSTRT = 0b0001; // Slope Start Signal Selection: PWM1 Trigger 1
-    
-    // ToDo: CHECK SLP1DAT in conjunction with DAC1DATH and DAC1DATL
-    // DAC1DATL should be reserved/valid only in hysteretic and triangular mode
-    // So for normal slope compensation the valid registers should be DAC1DATH as reference level
-    // and SLP1DAT for the slew rate (V/usec translated in DAC-ticks/time-ticks)
-    // Previous configurations have shown that this might not be true, so please revisit this setting.
+    SLP1CONLbits.SLPSTRT = 0b0001; // Slope Start Signal Selection: PWM1 Trigger 1 => PGxTRIGA
     
     // SLPxDAT: DACx SLOPE DATA REGISTER
-//    SLP1DAT = 500; // Slope Ramp Rate Value
-    SLP1DAT = SLOPE_RATE; // Slope Ramp Rate Value
+    SLP1DAT = DAC_SLOPE_RATE; // Slope Ramp Rate Value
             
         
     return(1);
