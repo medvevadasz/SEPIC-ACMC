@@ -76,18 +76,6 @@ __builtin_write_RPCON(0x0800);
         } // Toggle LED and reset toggle counter
         Nop();
         
-        // Starting at a slope of 100mV/usec (=8), the slew rate is incremented in single steps
-        // up to 1V/usec (=80) and then resets to 100mV/usec (=8)
-        if (dac_cnt++ > DACMOD_COUNT)
-        {
-            if(SLP1DAT < 80)
-            { SLP1DAT++; }
-            else
-            { SLP1DAT = DAC_SLOPE_RATE; }
-            
-            dac_cnt = 0;
-        }
-        
         
     }
 

@@ -116,8 +116,8 @@ extern "C" {
  * *************************************************************************************************/
 
 // Feedback Loop Output Settings
-#define DAC_MINIMUM     0.650   // Minimum DAC voltage in [V]
-#define DAC_MAXIMUM     3.100   // Maximum DAC voltage in [V]
+#define DAC_MINIMUM      0.650   // Minimum DAC voltage in [V]
+#define DAC_MAXIMUM      3.100   // Maximum DAC voltage in [V]
 #define SLEW_RATE        0.100   // Compensation ramp in [V/usec] (SLPxDAT is calculated below)
 
 //-------    
@@ -166,14 +166,14 @@ extern "C" {
 #define LEB_PERIOD                  200e-9  // Leading Edge Blanking period in [sec]
 #define SLOPE_START_DELAY           150e-9  // Delay in {sec] until the slope compensation ramp starts
 #define SLOPE_STOP_DELAY            0.85    // Delay in {sec] until the slope compensation ramp stops
-#define VOUT_ADC_TRIGGER_DELAY      300e-9  // ADC trigger delay in [sec] used to sample output voltage
-#define SWITCH_FREQ_PHASE_SHIFT     100e-9  // Switching frequency phase shift in [sec]
-//#define SWITCH_FREQ_PHASE_SHIFT     100e-9  // Switching frequency phase shift in [sec]
+#define VOUT_ADC_TRIGGER_DELAY      (SWITCHING_PERIOD - 1000e-9) // ADC trigger delay in [sec] used to sample output voltage
+#define PWM_MAIN_PHASE_SHIFT        50e-9   // Switching frequency phase shift in [sec]
+#define PWM_AUX_PHASE_SHIFT         150e-9  // Switching frequency phase shift in [sec]
     
 //------ macros
 #define MAX_DUTY_CYCLE              (uint16_t)(PWM_PERIOD * MAXIMUM_DUTY_RATIO)     // This sets the maximum duty cycle
 #define PWM_LEB_PERIOD              (uint16_t)(LEB_PERIOD / PWM_RES)  // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
-#define PWM_PHASE_SHIFT             (uint16_t)(SWITCH_FREQ_PHASE_SHIFT / PWM_RES)   // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
+#define PWM_PHASE_SHIFT             (uint16_t)(PWM_MAIN_PHASE_SHIFT / PWM_RES)   // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
     
 #define VOUT_ADCTRIG                (uint16_t)(VOUT_ADC_TRIGGER_DELAY / PWM_RES)    // ADC trigger delay in [ticks] used to sample output voltage
 #define SLP_TRIG_START              (uint16_t)(SLOPE_START_DELAY / PWM_RES)         // Delay in {sec] until the slope compensation ramp starts
@@ -244,8 +244,6 @@ extern "C" {
 #define SEPIC_PGD       (uint16_t)((SEPIC_POWER_GOOD_DELAY * MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_REF_STEP  (uint16_t)(SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0))
 
-
-    
 /*!SEPIC_POWER_CONTROLLER_t data structure sepic
  * *************************************************************************************************
  * Summary:

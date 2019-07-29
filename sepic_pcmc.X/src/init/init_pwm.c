@@ -308,10 +308,10 @@ volatile uint16_t init_sepic_trig_pwm(void) {
     
         
     // PGxPHASE: PWM GENERATOR x PHASE REGISTER
-    PG2PHASE    = 100;
+    PG2PHASE    = PWM_AUX_PHASE_SHIFT;
     
     // PGxDC: PWM GENERATOR x DUTY CYCLE REGISTER
-    PG2DC       = MAX_DUTY_CYCLE - 100;      
+    PG2DC       = (MAX_DUTY_CYCLE - PWM_AUX_PHASE_SHIFT);      
     
     // PGxDCA: PWM GENERATOR x DUTY CYCLE ADJUSTMENT REGISTER
     PG2DCA      =  0x0000;      
