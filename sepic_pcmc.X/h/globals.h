@@ -225,7 +225,7 @@ extern "C" {
 
 #define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt   
 #define SEPIC_VOUT_ADCBUF               ADCBUF16
-#define SEPIC_VOUT_ADCTRIG              PG3TRIGA
+#define SEPIC_VOUT_ADCTRIG              PG2TRIGA
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0
 #define SEPIC_DAC_VREF_REGISTER         DAC1DATH
 
