@@ -140,6 +140,48 @@ extern "C" {
 #define DAC_TMODTIME    (uint16_t)((DAC_T_RESET * FDAC)/2.0)            // Transition Mode Duration
 #define DAC_SSTIME      (uint16_t)((DAC_T_SETTLING * FDAC)/2.0)         // Time from Start of Transition Mode until Steady-State Filter is Enabled
 
+
+/*!PWM Settings
+ * *************************************************************************************************
+ * Summary:
+ * Global defines for specific parameters of the device PWM
+ * 
+ * Description:
+ * This section is used to define device specific parameters of PWM frequency, may duty ratio, 
+ * leading edge blanking, slope compensation and ADC triggers.
+ * granularity and slope timer frequency to calculate register values representing physical voltages.
+ * Pre-compiler macros are used to translate physical values into binary (integer) numbers 
+ * to be written to SFRs
+ * 
+ * *************************************************************************************************/
+    
+#define SWITCHING_FREQUENCY         300e+3      // Power Supply Switching Frequency in [Hz]
+//------ macros
+#define SWITCHING_PERIOD            (1.0/SWITCHING_FREQUENCY)   // Power Supply Switching Period in [sec]
+#define PWM_RES                     (1.0/AUX_FREQUENCY)         // PWM Resolution
+#define PWM_PERIOD                  (uint16_t)(SWITCHING_PERIOD / PWM_RES)      // Measured in [tick = 2ns]
+//------ 
+
+#define MAXIMUM_DUTY_RATIO          0.80    // Maximum Duty Ratio in [%]
+#define LEB_PERIOD                  200e-9  // Leading Edge Blanking period in [sec]
+#define SLOPE_START_DELAY           150e-9  // Delay in {sec] until the slope compensation ramp starts
+#define SLOPE_STOP_DELAY            0.85    // Delay in {sec] until the slope compensation ramp stops
+#define VOUT_ADC_TRIGGER_DELAY      300e-9  // ADC trigger delay in [sec] used to sample output voltage
+#define SWITCH_FREQ_PHASE_SHIFT     100e-9  // Switching frequency phase shift in [sec]
+//#define SWITCH_FREQ_PHASE_SHIFT     100e-9  // Switching frequency phase shift in [sec]
+    
+//------ macros
+#define MAX_DUTY_CYCLE              (uint16_t)(PWM_PERIOD * MAXIMUM_DUTY_RATIO)     // This sets the maximum duty cycle
+#define PWM_LEB_PERIOD              (uint16_t)(LEB_PERIOD / PWM_RES)  // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
+#define PWM_PHASE_SHIFT             (uint16_t)(SWITCH_FREQ_PHASE_SHIFT / PWM_RES)   // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
+    
+#define VOUT_ADCTRIG                (uint16_t)(VOUT_ADC_TRIGGER_DELAY / PWM_RES)    // ADC trigger delay in [ticks] used to sample output voltage
+#define SLP_TRIG_START              (uint16_t)(SLOPE_START_DELAY / PWM_RES)         // Delay in {sec] until the slope compensation ramp starts
+#define SLP_TRIG_STOP               (uint16_t)(PWM_PERIOD * SLOPE_STOP_DELAY) // Delay in {sec] until the slope compensation ramp stops
+
+#define PWM_DEAD_TIME_RISING        0   // Rising edge dead time [2ns]
+#define PWM_DEAD_TIME_FALLING       0   // Falling edge dead time [2ns]
+
     
 /*!Hardware Abstraction
  * *************************************************************************************************
@@ -153,13 +195,13 @@ extern "C" {
  * 
  * *************************************************************************************************/
     
-#define VOUT_NOMINAL        15.0            // Nominal output voltage
+#define SEPIC_VOUT_NOMINAL  15.0            // Nominal output voltage
 
 #define SEPIC_VOUT_R1       (2.0 * 2.87)    // Upper voltage divider resistor in kOhm
 #define SEPIC_VOUT_R2       (1.0)           // Lower voltage divider resistor in kOhm
 
 #define SEPIC_VOUT_FB_GAIN  (float)((SEPIC_VOUT_R2) / (SEPIC_VOUT_R1 + SEPIC_VOUT_R2))
-#define SEPIC_V_OUT_REF     (uint16_t)(VOUT_NOMINAL * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define SEPIC_V_OUT_REF     (uint16_t)(SEPIC_VOUT_NOMINAL * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 
 /*!State Machine Settings
  * *************************************************************************************************

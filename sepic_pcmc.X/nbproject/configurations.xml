@@ -250,9 +250,9 @@
         <property key="MCCP/SCCP 7" value="true"/>
         <property key="MCCP/SCCP 8" value="true"/>
         <property key="MCCP/SCCP 9" value="true"/>
-        <property key="PG1" value="true"/>
-        <property key="PG2" value="true"/>
-        <property key="PG3" value="true"/>
+        <property key="PG1" value="false"/>
+        <property key="PG2" value="false"/>
+        <property key="PG3" value="false"/>
         <property key="PG4" value="true"/>
         <property key="PG5" value="true"/>
         <property key="PG6" value="true"/>

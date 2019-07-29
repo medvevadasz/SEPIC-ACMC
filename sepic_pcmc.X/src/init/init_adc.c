@@ -115,7 +115,7 @@ volatile uint16_t init_vin_adc(void) {
     ADIELbits.IE12 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG3Lbits.TRGSRC12 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2
+    ADTRIG3Lbits.TRGSRC12 = 0b00110; // Trigger Source Selection for Corresponding Analog Inputs: PWM2 Trigger 1
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP0CONbits.CHNL = 12; // Input Channel Number: 12=AN12
@@ -165,7 +165,7 @@ volatile uint16_t init_sepic_adc(void) {
     ADIEHbits.IE16 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG4Lbits.TRGSRC16 = 0b01000; // Trigger Source Selection for Corresponding Analog Inputs: PWM3 Trigger 1
+    ADTRIG4Lbits.TRGSRC16 = 0b00110; // Trigger Source Selection for Corresponding Analog Inputs: PWM2 Trigger 1
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP1CONbits.CHNL = 16; // Input Channel Number: 16=AN16
@@ -215,7 +215,7 @@ volatile uint16_t init_pot_adc(void) {
     ADIELbits.IE6 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG1Hbits.TRGSRC6 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2 (the same for terminating the ramp generation)
+    ADTRIG1Hbits.TRGSRC6 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2 
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP1CONbits.CHNL = 6;  // Input Channel Number: 6=AN6

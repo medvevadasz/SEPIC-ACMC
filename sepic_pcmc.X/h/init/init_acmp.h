@@ -44,8 +44,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define DACDATH         0       // DAC value for the buck the slope starts from
-#define DACDATL         0       // Set this to minimum in Slope mode
+#define INIT_DACDATH    0       // DAC value for the buck the slope starts from
+#define INIT_DACDATL    0       // Set this to minimum in Slope mode
     
 extern volatile uint16_t init_acmp_module(void);
 extern volatile uint16_t init_sepic_acmp(void);

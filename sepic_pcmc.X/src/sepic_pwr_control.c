@@ -31,7 +31,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     
     c2p2z_sepic_Init();
     
-    c2p2z_sepic.ADCTriggerOffset = VOUT_ADC_TRIGGER_DELAY;
+    c2p2z_sepic.ADCTriggerOffset = VOUT_ADCTRIG;
     c2p2z_sepic.ptrADCTriggerRegister = &SEPIC_VOUT_ADCTRIG;
     c2p2z_sepic.InputOffset = SEPIC_VOUT_FEEDBACK_OFFSET;
     c2p2z_sepic.ptrControlReference = &sepic.data.v_ref;
@@ -51,7 +51,6 @@ volatile uint16_t launch_sepic_pwr_control(void) {
     // Run enable-sequence of all peripherals used by this power controller
     launch_adc();               // Start ADC Module
     launch_sepic_acmp();        // Start analog comparator/DAC module
-    launch_sepic_trig_pwm();    // Start auxiliary PWM 
     launch_sepic_pwm();         // Start PWM
     
     c2p2z_sepic_Reset(&c2p2z_sepic);    // Reset control loop histories

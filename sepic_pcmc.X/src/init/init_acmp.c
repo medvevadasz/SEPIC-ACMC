@@ -65,10 +65,10 @@ volatile uint16_t init_sepic_acmp(void) {
     // ToDo: CHECK DAC LEB PERIOD TO BE CORRECT AND DOESN'T CREATE CONFLICTS
     DAC1CONHbits.TMCB = DAC_TMCB; // DACx Leading-Edge Blanking: period for the comparator
     // ***********************************************
-        
+    
     // DACxDATH: DACx DATA HIGH REGISTER
-    DAC1DATH = (DACDATH & 0x0FFF); // DACx Data: This register specifies the high DACx data value. Valid values are from 205 to 3890.
-    DAC1DATL = (DACDATL & 0x0FFF); // DACx Low Data
+    DAC1DATH = (INIT_DACDATH & 0x0FFF); // DACx Data: This register specifies the high DACx data value. Valid values are from 205 to 3890.
+    DAC1DATL = (INIT_DACDATL & 0x0FFF); // DACx Low Data
         
     // SLPxCONH: DACx SLOPE CONTROL HIGH REGISTER
     SLP1CONHbits.SLOPEN = 1; // Slope Function Enable/On: Enables slope function

@@ -16,6 +16,10 @@ volatile uint16_t tgl_cnt = 0;  // local counter of LED toggle loops
 #define TGL_INTERVAL    2999    // LED toggle interval of (2999 + 1) x 100usec = 100ms
 #define TMR1_TIMEOUT    30000   // Timeout protection for Timer1 interrupt flag bit
 
+volatile uint32_t dac_cnt = 0;  // local counter of LED toggle loops
+#define DACMOD_COUNT    1999    // DAC increment interval of (1999 + 1) x 100usec = 200ms
+
+
 int main(void) {
 
     volatile uint16_t timeout = 0;
@@ -71,6 +75,19 @@ __builtin_write_RPCON(0x0800);
             tgl_cnt = 0;
         } // Toggle LED and reset toggle counter
         Nop();
+        
+        // Starting at a slope of 100mV/usec (=8), the slew rate is incremented in single steps
+        // up to 1V/usec (=80) and then resets to 100mV/usec (=8)
+        if (dac_cnt++ > DACMOD_COUNT)
+        {
+            if(SLP1DAT < 80)
+            { SLP1DAT++; }
+            else
+            { SLP1DAT = DAC_SLOPE_RATE; }
+            
+            dac_cnt = 0;
+        }
+        
         
     }
 
