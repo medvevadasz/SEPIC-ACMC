@@ -65,7 +65,7 @@ __builtin_write_RPCON(0x0800);
         while ((!_T1IF) && (timeout++ < TMR1_TIMEOUT));
         timeout = 0;    // Reset timeout counter
         _T1IF = 0; // reset Timer1 interrupt flag bit
-        DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
+//        DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
 
         exec_sepic_pwr_control();
                

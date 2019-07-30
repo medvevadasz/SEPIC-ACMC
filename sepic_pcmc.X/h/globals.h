@@ -84,6 +84,21 @@ extern "C" {
 #define CPU_FREQUENCY       100000000   // CPU frequency in [Hz]
 #define AUX_FREQUENCY       500000000   // Auxiliary Clock Frequency in [Hz]
 #define PWM_FREQUENCY       500000000   // PWM Generator Base Clock Frequency in [Hz]
+    
+/*!State Machine Settings
+ * *************************************************************************************************
+ * Summary:
+ * Global defines for state-machine specific parameters
+ * 
+ * Description:
+ * This section is used to define state-machine settings such as the main execution call interval. 
+ * Pre-compiler macros are used to translate physical values into binary (integer) numbers to be 
+ * written to SFRs and variables.
+ * 
+ * *************************************************************************************************/
+    
+#define MAIN_EXECUTION_PERIOD    100e-6     // main state machine pace period in [sec]
+#define MAIN_EXEC_PER           (uint16_t)((CPU_FREQUENCY * MAIN_EXECUTION_PERIOD)-1.0)
 
 /*!ADC Settings
  * *************************************************************************************************
@@ -118,7 +133,8 @@ extern "C" {
 // Feedback Loop Output Settings
 #define DAC_MINIMUM      0.650   // Minimum DAC voltage in [V]
 #define DAC_MAXIMUM      3.100   // Maximum DAC voltage in [V]
-#define SLEW_RATE        0.100   // Compensation ramp in [V/usec] (SLPxDAT is calculated below)
+#define SLEW_RATE        0.120   // Compensation ramp in [V/usec] (SLPxDAT is calculated below)
+                                 // Slope resolution is 12.4 mV/tick
 
 //-------    
 #define DAC_REF         (double)3.300           // DAC reference voltage (usually AVDD)
@@ -155,7 +171,7 @@ extern "C" {
  * 
  * *************************************************************************************************/
     
-#define SWITCHING_FREQUENCY         300e+3      // Power Supply Switching Frequency in [Hz]
+#define SWITCHING_FREQUENCY         350e+3      // Power Supply Switching Frequency in [Hz]
 //------ macros
 #define SWITCHING_PERIOD            (1.0/SWITCHING_FREQUENCY)   // Power Supply Switching Period in [sec]
 #define PWM_RES                     (1.0/AUX_FREQUENCY)         // PWM Resolution
@@ -202,21 +218,6 @@ extern "C" {
 
 #define SEPIC_VOUT_FB_GAIN  (float)((SEPIC_VOUT_R2) / (SEPIC_VOUT_R1 + SEPIC_VOUT_R2))
 #define SEPIC_V_OUT_REF     (uint16_t)(SEPIC_VOUT_NOMINAL * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
-
-/*!State Machine Settings
- * *************************************************************************************************
- * Summary:
- * Global defines for state-machine specific parameters
- * 
- * Description:
- * This section is used to define state-machine settings such as the main execution call interval. 
- * Pre-compiler macros are used to translate physical values into binary (integer) numbers to be 
- * written to SFRs and variables.
- * 
- * *************************************************************************************************/
-    
-#define MAIN_EXECUTION_PERIOD    100e-6     // main state machine pace period in [sec]
-#define MAIN_EXEC_PER           (uint16_t)((CPU_FREQUENCY * MAIN_EXECUTION_PERIOD)-1.0)
 
 /*!Startup Behavior
  * *************************************************************************************************
@@ -290,7 +291,7 @@ extern "C" {
  * 
  * *************************************************************************************************/
 
-#define USE_EXTERNAL_REFERENCE  true    // Enable/disable external reference voltage input
+#define USE_EXTERNAL_REFERENCE  false    // Enable/disable external reference voltage input
     
 #define V_REF_MINIMUM       9.0  // lower output voltage limit in [V]
 #define V_REF_MAXIMUM       22.0 // upper output voltage limit in [V]
@@ -298,7 +299,6 @@ extern "C" {
 #define V_REF_MIN           (uint16_t)(V_REF_MINIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 #define V_REF_MAX           (uint16_t)(V_REF_MAXIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 #define V_REF_DIFF          (V_REF_MAX - V_REF_MIN)
-    
     
 /*!SEPIC_POWER_CONTROLLER_t data structure sepic
  * *************************************************************************************************

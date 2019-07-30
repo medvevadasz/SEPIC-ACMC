@@ -34,7 +34,7 @@
  * 	Pole&Zero Placement:
  * ***************************************************************************************
  *
- * 	fP0:	300 Hz 
+ * 	fP0:	200 Hz 
  * 	fP1:	60000 Hz 
  * 	fZ1:	300 Hz 
  *
@@ -44,8 +44,8 @@
 
 	volatile fractional c2p2z_sepic_ACoefficients [2] = 
 	{
-		0x4629,	// Coefficient A1 will be multiplied with controller output u(n-1)
-		0xEFD1	// Coefficient A2 will be multiplied with controller output u(n-2)
+		0x693E,	// Coefficient A1 will be multiplied with controller output u(n-1)
+		0xE7B9	// Coefficient A2 will be multiplied with controller output u(n-2)
 	};
 
 	volatile fractional c2p2z_sepic_BCoefficients [3] = 
@@ -57,9 +57,9 @@
 
 
 	volatile int16_t c2p2z_sepic_pre_scaler = 3;
-	volatile int16_t c2p2z_sepic_post_shift_A = -2;
+	volatile int16_t c2p2z_sepic_post_shift_A = -1;
 	volatile int16_t c2p2z_sepic_post_shift_B = 0;
-	volatile fractional c2p2z_sepic_post_scaler = 0x4BE5;
+	volatile fractional c2p2z_sepic_post_scaler = 0x6531;
 
 	volatile cNPNZ16b_t c2p2z_sepic; // user-controller data object
 

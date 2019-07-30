@@ -1,6 +1,6 @@
 [GUI]
 CreateDate=7/19/2019 6:19:39 PM
-SaveDate=07/23/19 6:54:14 PM
+SaveDate=07/30/19 2:21:46 PM
 Name=z-Domain Control Loop Designer
 Version=0.9.0.61
 WindoWState=Maximized
@@ -16,7 +16,7 @@ QFormat=1
 SamplingFrequency=350k
 InputGain=0.148
 InputGainNormalization=1
-FrequencyP0=300
+FrequencyP0=200
 FrequencyP1=60k
 FrequencyZ1=300
 FrequencyP2=80k

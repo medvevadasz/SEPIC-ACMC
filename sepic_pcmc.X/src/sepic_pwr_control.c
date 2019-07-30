@@ -227,12 +227,15 @@ volatile uint16_t exec_sepic_pwr_control(void) {
 
 void __attribute__((__interrupt__, auto_psv, context))_SEPIC_VOUT_ADCInterrupt(void)
 {
+    DBGPIN_1_SET;
+    
     sepic.status.flags.adc_active = true;
     sepic.data.v_out = SEPIC_VOUT_ADCBUF;
 
     c2p2z_sepic_Update(&c2p2z_sepic);
 
     _ADCAN16IF = 0;  // Clear the ADCANx interrupt flag 
+    DBGPIN_1_CLEAR;
     
 }
 

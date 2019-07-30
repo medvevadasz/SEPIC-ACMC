@@ -51,8 +51,10 @@ void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
     
     if(!(++avg_cnt & 0x00FF)) {     // After 256 samples, calculate average value
 
-#if (USE_EXTERNAL_REFERENCE==true) // Only override reference value when user-option is enabled
-        sepic.data.v_ref= (vref_avg >> 8);  // Copy averaged value into reference value
+        #if (USE_EXTERNAL_REFERENCE==true) // Only override reference value when user-option is enabled
+        sepic.data.v_ref = (vref_avg >> 8);  // Copy averaged value into reference value
+        #else
+        sepic.data.v_ref = SEPIC_V_OUT_REF;
         #endif
         vref_avg = 0;                       // Reset averaging buffer
     }
