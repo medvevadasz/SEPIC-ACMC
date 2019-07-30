@@ -132,7 +132,7 @@ volatile uint16_t exec_sepic_pwr_control(void) {
          * the defined power-on delay period has expired. PWM and control loop are disabled.
          * At the end of this phase, the state automatically switches to RAMP_UP mode */     
         case SEPIC_SS_PWR_ON_DELAY:  
-
+DBGPIN_2_SET;
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
             
             if(sepic.soft_start.counter++ > sepic.soft_start.pwr_on_delay)
@@ -151,7 +151,7 @@ volatile uint16_t exec_sepic_pwr_control(void) {
          * reference level set in sepic.data.v_ref, the ramp-up period ends and the state machine 
          * automatically switches to POWER GOOD DELAY mode */     
         case SEPIC_SS_RAMP_UP: // Increasing reference by 4 every scheduler cycle
-DBGPIN_2_SET;
+DBGPIN_2_CLEAR;
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
 
             // Force PWM output and controller to be active 
@@ -165,8 +165,6 @@ DBGPIN_2_SET;
             {
                 sepic.soft_start.counter = 0;                       // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_PWR_GOOD_DELAY; // switch to Power Good Delay mode
-DBGPIN_2_CLEAR;
-                
             }
             break; 
             
@@ -175,6 +173,7 @@ DBGPIN_2_CLEAR;
          * is counting call intervals until the user defined period has expired. Then the state 
          * machine automatically switches to COMPLETE mode */     
         case SEPIC_SS_PWR_GOOD_DELAY:
+DBGPIN_2_SET;
             
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
             
@@ -189,7 +188,7 @@ DBGPIN_2_CLEAR;
          * The COMPLETE phase is the default state of the power controller. Once entered, only a FAULT
          * condition or external modifications of the soft-start phase can trigger a change of state. */     
         case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
-            
+DBGPIN_2_CLEAR;
             sepic.status.flags.op_status = SEPIC_STAT_ON; // Set SEPIC status to ON mode
             c2p2z_sepic.ptrControlReference = &sepic.data.v_ref; // hand reference control back
             break;
