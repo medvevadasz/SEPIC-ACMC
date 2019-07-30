@@ -58,6 +58,7 @@ __builtin_write_RPCON(0x0800);
     
     DBGLED_GN_CLEAR;
     DBGLED_RD_SET;
+    DBGPIN_3_SET;
     
     while (1) {
 

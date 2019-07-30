@@ -7,7 +7,7 @@
  * 	Controller Type:	2P2Z - Basic Current Mode Compensator
  * 	Sampling Frequency:	350000 Hz 
  * 	Fixed Point Format:	15
- * 	Scaling Mode:		2 - Single Bit-Shift with Output Factor Scaling
+ * 	Scaling Mode:		4 - Fast Floating Point Coefficient Scaling
  * 	Input Gain:			0.148
  * 
  * ***************************************************************************************/
@@ -36,8 +36,8 @@
 
 	typedef struct
 	{
-		volatile fractional ACoefficients[2]; // A-Coefficients
-		volatile fractional BCoefficients[3]; // B-Coefficients
+		volatile int32_t ACoefficients[2]; // A-Coefficients
+		volatile int32_t BCoefficients[3]; // B-Coefficients
 	} __attribute__((packed))C2P2Z_SEPIC_CONTROL_LOOP_COEFFICIENTS_t;
 
 	typedef struct

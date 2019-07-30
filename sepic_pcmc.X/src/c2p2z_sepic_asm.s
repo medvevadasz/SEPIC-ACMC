@@ -2,9 +2,9 @@
 ; **********************************************************************************
 ;  SDK Version: z-Domain Control Loop Designer v0.9.0.61
 ;  Author:      M91406
-;  Date/Time:   07/30/19 2:22:01 PM
+;  Date/Time:   07/30/19 4:30:56 PM
 ; **********************************************************************************
-;  2P2Z Control Library File (Single Coefficient Factor Scaling Mode)
+;  2P2Z Control Library File (Fast Floating Point Coefficient Scaling Mode)
 ; **********************************************************************************
 	
 ;------------------------------------------------------------------------------
@@ -37,9 +37,9 @@
 	.equ offCtrlHistArraySize,      20    ; size of the control history array
 	.equ offErrHistArraySize,       22    ; size of the error history array
 	.equ offPreShift,               24    ; value of input value normalization bit-shift scaler
-	.equ offPostShiftA,             26    ; value of A-term normalization bit-shift scaler
-	.equ reserved_1,                28    ; (reserved)
-	.equ offPostScaler,             30    ; control loop output normalization factor
+	.equ reserved_1,                26    ; (reserved)
+	.equ reserved_2,                28    ; (reserved)
+	.equ reserved_3,                30    ; (reserved)
 	.equ offInputOffset,            32    ; input source offset value
 	.equ offMinOutput,              34    ; minimum clamping value of control output
 	.equ offMaxOutput,              36    ; maximum clamping value of control output
@@ -80,17 +80,15 @@ _c2p2z_sepic_Update:    ; provide global scope to routine
 	
 ;------------------------------------------------------------------------------
 ; Compute compensation filter term
-	clr a, [w8]+=2, w4, [w10]+=2, w6    ; clear accumulator A and prefetch first operands
-	mac w4*w6, a, [w8]+=2, w4, [w10]+=2, w6    ; multiply control output (n-1) from the delay line with coefficient A1
-	mac w4*w6, a    ; multiply & accumulate last control output with coefficient of the delay line (no more prefetch)
-	
-;------------------------------------------------------------------------------
-; Setup pointers to B-Term data arrays
-	mov [w0 + #offBCoefficients], w8    ; load pointer to first index of B coefficients array
-	
-;------------------------------------------------------------------------------
-; Setup pointer to first element of error history array
-	mov [w0 + #offErrorHistory], w10    ; load pointer address into wreg
+	clr b, [w8]+=2, w5    ; clear both accumulators and prefetch first operands
+	clr a, [w8]+=4, w4, [w10]+=2, w6
+	mpy w4*w6, a, [w8]+=4, w4, [w10]+=2, w6    ; multiply control output (n-%INDEX%) from the delay line with coefficient X%INDEX%
+	sftac a, w5
+	add b
+	mov [w8 - #6], w5    ; multiply & accumulate last control output with coefficient of the delay line (no more prefetch)
+	mpy w4*w6, a
+	sftac a, w5
+	add b
 	
 ;------------------------------------------------------------------------------
 ; Read data from input source and calculate error input to transfer function
@@ -102,6 +100,14 @@ _c2p2z_sepic_Update:    ; provide global scope to routine
 	sl w1, w2, w1    ; normalize error result to fractional number format
 	
 ;------------------------------------------------------------------------------
+; Setup pointers to B-Term data arrays
+	mov [w0 + #offBCoefficients], w8    ; load pointer to first index of B coefficients array
+	
+;------------------------------------------------------------------------------
+; Setup pointer to first element of error history array
+	mov [w0 + #offErrorHistory], w10    ; load pointer address into wreg
+	
+;------------------------------------------------------------------------------
 ; Update error history (move error one tick along the delay line)
 	mov [w10 + #2], w6    ; move entry (n-2) into buffer
 	mov w6, [w10 + #4]    ; move buffered value one tick down the delay line
@@ -111,22 +117,22 @@ _c2p2z_sepic_Update:    ; provide global scope to routine
 	
 ;------------------------------------------------------------------------------
 ; Compute compensation filter term
-	movsac a, [w8]+=2, w4, [w10]+=2, w6    ; leave contents accumulator A untouched and prefetch first operands
-	mac w4*w6, a, [w8]+=2, w4, [w10]+=2, w6    ; multiply & accumulate error input (n-0) from the delay line with coefficient B0 and prefetch next operands
-	mac w4*w6, a, [w8]+=2, w4, [w10]+=2, w6    ; multiply & accumulate error input (n-1) from the delay line with coefficient B1 and prefetch next operands
-	mac w4*w6, a    ; multiply & accumulate last control output with coefficient of the delay line (no more prefetch)
-	
-;------------------------------------------------------------------------------
-; Backward normalization of recent result
-	mov [w0 + #offPostShiftA], w6
-	sftac a, w6
-	sac.r a, w4    ; store most recent accumulator result in working register
-	
-;------------------------------------------------------------------------------
-; Initialize Scale-factor and multiply
-	mov [w0 + #offPostScaler],  w6
+	movsac b, [w8]+=2, w5    ; clear accumulator A, leave contents of accumulator B unchanged and prefetch first operands
+	clr a, [w8]+=4, w4, [w10]+=2, w6
+	mpy w4*w6, a, [w8]+=4, w4, [w10]+=2, w6    ; multiply control output (n-%INDEX%) from the delay line with coefficient X%INDEX%
+	sftac a, w5
+	add b
+	mov [w8 - #6], w5    ; multiply control output (n-0) from the delay line with coefficient X0
+	mpy w4*w6, a, [w8]+=4, w4, [w10]+=2, w6
+	sftac a, w5
+	add b
+	mov [w8 - #6], w5    ; multiply & accumulate last control output with coefficient of the delay line (no more prefetch)
 	mpy w4*w6, a
-	sac.r a, w4    ; store most recent accumulator result in working register
+	sftac a, w5
+	add b
+	
+; Backwards normalization of the controller output
+	sac.r b, w4    ; store most recent accumulator result in working register
 	
 ;------------------------------------------------------------------------------
 ; Controller Anti-Windup (control output value clamping)

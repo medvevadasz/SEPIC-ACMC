@@ -66,8 +66,8 @@ typedef struct {
     volatile uint16_t* ptrControlReference; // Pointer to global variable of input register holding the controller reference value (e.g. uint16_t my_ref)
 
     // Filter coefficients and input/output histories
-    volatile fractional* ptrACoefficients; // Pointer to A coefficients located in X-space 
-    volatile fractional* ptrBCoefficients; // Pointer to B coefficients located in X-space 
+    volatile int32_t* ptrACoefficients; // Pointer to A coefficients located in X-space 
+    volatile int32_t* ptrBCoefficients; // Pointer to B coefficients located in X-space 
     volatile fractional* ptrControlHistory; // Pointer to n delay-line samples located in Y-space with first sample being the most recent 
     volatile fractional* ptrErrorHistory; // Pointer to n+1 delay-line samples located in Y-space with first sample being the most recent 
 

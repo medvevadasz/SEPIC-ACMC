@@ -7,7 +7,7 @@
  * 	Controller Type:	2P2Z - Basic Current Mode Compensator
  * 	Sampling Frequency:	350000 Hz 
  * 	Fixed Point Format:	15
- * 	Scaling Mode:		2 - Single Bit-Shift with Output Factor Scaling
+ * 	Scaling Mode:		4 - Fast Floating Point Coefficient Scaling
  * 	Input Gain:			0.148
  * 
  * ***************************************************************************************/
@@ -34,32 +34,32 @@
  * 	Pole&Zero Placement:
  * ***************************************************************************************
  *
- * 	fP0:	200 Hz 
- * 	fP1:	60000 Hz 
- * 	fZ1:	300 Hz 
+ * 	fP0:	880 Hz 
+ * 	fP1:	17000 Hz 
+ * 	fZ1:	1200 Hz 
  *
  * ***************************************************************************************
  * 	Filter Coefficients and Parameters:
  * ***************************************************************************************/
 
-	volatile fractional c2p2z_sepic_ACoefficients [2] = 
+	volatile int32_t c2p2z_sepic_ACoefficients [2] = 
 	{
-		0x693E,	// Coefficient A1 will be multiplied with controller output u(n-1)
-		0xE7B9	// Coefficient A2 will be multiplied with controller output u(n-2)
+		0x6F0EFFFF,	// Coefficient A1 will be multiplied with controller output u(n-1)
+		0xA1E50000	// Coefficient A2 will be multiplied with controller output u(n-2)
 	};
 
-	volatile fractional c2p2z_sepic_BCoefficients [3] = 
+	volatile int32_t c2p2z_sepic_BCoefficients [3] = 
 	{
-		0x7FFF,	// Coefficient B0 will be multiplied with error input e(n)
-		0x00B0,	// Coefficient B1 will be multiplied with error input e(n-1)
-		0x80B1	// Coefficient B2 will be multiplied with error input e(n-2)
+		0x54DF0000,	// Coefficient B0 will be multiplied with error input e(n)
+		0x73C40006,	// Coefficient B1 will be multiplied with error input e(n-1)
+		0xACF10000	// Coefficient B2 will be multiplied with error input e(n-2)
 	};
 
 
 	volatile int16_t c2p2z_sepic_pre_scaler = 3;
-	volatile int16_t c2p2z_sepic_post_shift_A = -1;
+	volatile int16_t c2p2z_sepic_post_shift_A = 0;
 	volatile int16_t c2p2z_sepic_post_shift_B = 0;
-	volatile fractional c2p2z_sepic_post_scaler = 0x6531;
+	volatile fractional c2p2z_sepic_post_scaler = 0x0000;
 
 	volatile cNPNZ16b_t c2p2z_sepic; // user-controller data object
 
