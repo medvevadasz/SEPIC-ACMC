@@ -240,10 +240,10 @@ extern "C" {
 #define SEPIC_RAMP_PERIOD             50e-3         // ramp period in [sec]
 #define SEPIC_POWER_GOOD_DELAY        100e-3        // power good in [sec]
 
-#define SEPIC_POD       (uint16_t)((SEPIC_POWER_ON_DELAY * MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD * MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_PGD       (uint16_t)((SEPIC_POWER_GOOD_DELAY * MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_REF_STEP  (uint16_t)(SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0))
+#define SEPIC_PODLY     (uint16_t)((SEPIC_POWER_ON_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_PGDLY     (uint16_t)((SEPIC_POWER_GOOD_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_REF_STEP  (uint16_t)((SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0))-1.0)
 
 /*!SEPIC_POWER_CONTROLLER_t data structure sepic
  * *************************************************************************************************

@@ -22,12 +22,16 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_sepic_adc();        // Set up sepic converter ADC (voltage feedback only)
     init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
-    sepic.soft_start.counter = 0;                             // Reset Soft-Start Counter
-    sepic.soft_start.pwr_on_delay = SEPIC_POWER_ON_DELAY;     // Soft-Start Power-On Delay = 500 ms
-    sepic.soft_start.ramp_period = SEPIC_RAMP_PERIOD;         // Soft-Start Ramp Period = 50 ms
-    sepic.soft_start.pwr_good_delay = SEPIC_POWER_GOOD_DELAY; // Soft-Start Power Good Delay = 200 ms
-    sepic.soft_start.reference = SEPIC_V_OUT_REF;             // Soft-Start Target Reference = 12V
-    sepic.soft_start.ramp_ref_increment = SEPIC_REF_STEP;     // Soft-Start Single Step Increment of Reference
+    sepic.soft_start.counter = 0;                           // Reset Soft-Start Counter
+    sepic.soft_start.pwr_on_delay = SEPIC_PODLY;            // Soft-Start Power-On Delay = 500 ms
+    sepic.soft_start.ramp_period = SEPIC_RPER;              // Soft-Start Ramp Period = 50 ms
+    sepic.soft_start.pwr_good_delay = SEPIC_PGDLY;          // Soft-Start Power Good Delay = 200 ms
+    sepic.soft_start.reference = SEPIC_V_OUT_REF;           // Soft-Start Target Reference = 12V
+    sepic.soft_start.ramp_ref_increment = SEPIC_REF_STEP;   // Soft-Start Single Step Increment of Reference
+
+    if(sepic.soft_start.ramp_ref_increment == 0) {          // Protecting startup settings against 
+        sepic.soft_start.ramp_ref_increment = 1;            // ZERO settings
+    }
     
     c2p2z_sepic_Init();
     
