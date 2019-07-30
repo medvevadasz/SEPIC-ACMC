@@ -1,36 +1,75 @@
 # .gitignore file
 #
-# Set up for Microchip/MPLAB X development
+# Template for Microchip/MPLAB X development environment
 #
-# John Haroian
-# Updated May 7, 2015
+# M91406, Andreas Reiter
+# Updated July 10, 2019
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+### Project-specific excludes ###
+docs/
+sepic_pcmc.X/build/
+sepic_pcmc.X/debug/
+sepic_pcmc.X/nbproject/private/
+sepic_pcmc.X/nbproject/Makefile-*
 
-# Executables
-*.exe
-
-# Netbeans specific
+### Misc ###
 ~*.*
-build/
-dist/
-private/
-disassembly/
-*.zip
-*.mk
-*.bash
-Makefile-genesis.properties
-
-# KDE specific
-.directory
-
-# Misc
 .svn
 *.bak
+*.log
+*.exe
+*.zip
 
+# Created by https://www.gitignore.io/api/mplabx
+# Edit at https://www.gitignore.io/?templates=mplabx
+
+### MPLabX ###
+#Ignore List for Microchips MPLAB X IDE
+#Form of netbeans with vendor specific changes
+#Taken from zeha on GIST https://gist.github.com/zeha/5999375
+#Edited and extended by M91406 (Andreas Reiter)
+
+*.d
+*.pre
+*.p1
+*.lst
+*.sym
+*.obj
+*.o
+*.sdb
+*.obj.dmp
+*.mk
+*.bash
+disassembly/
+html/
+nbproject/private/
+nbproject/Package-*.bash
+build/
+nbbuild/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+funclist
+nbproject/Makefile-*
+disassembly/
+*.map
+
+# End of https://www.gitignore.io/api/mplabx
+
+### Project specific files to keep ###
+!*.dcld
+!readme.txt
+!readme.md
+!Makefile
+!sepic_pcmc.X/Makefile
+!sepic_pcmc.X/readme.txt
+!sepic_pcmc.X/*.dcld
+!src/
+!h/
+!dist/
+!sepic_pcmc.X/src/
+!sepic_pcmc.X/h/
+!sepic_pcmc.X/dist/
+!sepic_pcmc.X/nbproject/configurations.xml
 
 
