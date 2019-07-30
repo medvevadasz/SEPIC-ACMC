@@ -16,6 +16,9 @@ Command:
   -Lc:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../support/dsPIC33C/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../support/dsPIC33E/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../support/dsPIC33F/gld \
+  build/SEPIC_wCKPIM/production/src/task_external_vref.o \
+  build/SEPIC_wCKPIM/production/src/task_fault_handler.o \
+  build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o \
   build/SEPIC_wCKPIM/production/src/config_bits.o \
   build/SEPIC_wCKPIM/production/src/globals.o \
   build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o \
@@ -27,9 +30,6 @@ Command:
   build/SEPIC_wCKPIM/production/src/init/init_acmp.o \
   build/SEPIC_wCKPIM/production/src/init/init_adc.o \
   build/SEPIC_wCKPIM/production/src/main.o \
-  build/SEPIC_wCKPIM/production/src/task_external_vref.o \
-  build/SEPIC_wCKPIM/production/src/task_fault_handler.o \
-  build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o \
   --local-stack \
   --defsym=__MPLAB_BUILD=1 \
   -Tp33CK256MP506.gld.00 \
@@ -105,7 +105,7 @@ section                    address   length (PC units)   length (bytes) (dec)
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
-_051E83C05d40d374           0x1000                   0            0x14  (20)
+_050333C05d40d8c3           0x1000                   0            0x14  (20)
 .ndata                      0x1014                   0            0x12  (18)
 .nbss                       0x1026                   0            0x14  (20)
 .bss                        0x103a                   0            0x74  (116)
@@ -134,13 +134,13 @@ External Symbols in Data Memory (by address):
                     0x101a                  _c2p2z_sepic_ErrorHistory_size
                     0x101c                  _c2p2z_sepic_ACoefficients
                     0x1024                  _c2p2z_sepic_pre_scaler
-                    0x1026                  _c2p2z_sepic_post_shift_A
-                    0x1028                  _c2p2z_sepic_post_shift_B
-                    0x102a                  _c2p2z_sepic_post_scaler
-                    0x102c                  _tgl_cnt
-                    0x102e                  _dac_cnt
-                    0x1032                  _vref_avg
-                    0x1036                  _avg_cnt
+                    0x1026                  _vref_avg
+                    0x102a                  _avg_cnt
+                    0x102c                  _c2p2z_sepic_post_shift_A
+                    0x102e                  _c2p2z_sepic_post_shift_B
+                    0x1030                  _c2p2z_sepic_post_scaler
+                    0x1032                  _tgl_cnt
+                    0x1034                  _dac_cnt
                     0x1038                  _release_counter
                     0x103a                  _uvlo
                     0x1046                  _ovlo
@@ -153,7 +153,7 @@ External Symbols in Data Memory (by address):
 
 External Symbols in Data Memory (by name):
 
-                    0x1036                  _avg_cnt
+                    0x102a                  _avg_cnt
                     0x106a                  _c2p2z_sepic
                     0x101c                  _c2p2z_sepic_ACoefficients
                     0x1014                  _c2p2z_sepic_ACoefficients_size
@@ -163,19 +163,19 @@ External Symbols in Data Memory (by name):
                     0x101a                  _c2p2z_sepic_ErrorHistory_size
                     0x1000                  _c2p2z_sepic_coefficients
                     0x6ff6                  _c2p2z_sepic_histories
-                    0x102a                  _c2p2z_sepic_post_scaler
-                    0x1026                  _c2p2z_sepic_post_shift_A
-                    0x1028                  _c2p2z_sepic_post_shift_B
+                    0x1030                  _c2p2z_sepic_post_scaler
+                    0x102c                  _c2p2z_sepic_post_shift_A
+                    0x102e                  _c2p2z_sepic_post_shift_B
                     0x1024                  _c2p2z_sepic_pre_scaler
-                    0x102e                  _dac_cnt
+                    0x1034                  _dac_cnt
                     0x1046                  _ovlo
                     0x1052                  _ovp
                     0x105e                  _reg
                     0x1038                  _release_counter
                     0x1094                  _sepic
-                    0x102c                  _tgl_cnt
+                    0x1032                  _tgl_cnt
                     0x103a                  _uvlo
-                    0x1032                  _vref_avg
+                    0x1026                  _vref_avg
 
 External Symbols in Program Memory (by address):
 
@@ -287,6 +287,9 @@ FBTSEQ           0x02bffc           0x000002
 
 Linker script and memory map
 
+LOAD build/SEPIC_wCKPIM/production/src/task_external_vref.o
+LOAD build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+LOAD build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
 LOAD build/SEPIC_wCKPIM/production/src/config_bits.o
 LOAD build/SEPIC_wCKPIM/production/src/globals.o
 LOAD build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
@@ -298,9 +301,6 @@ LOAD build/SEPIC_wCKPIM/production/src/init/init_pwm.o
 LOAD build/SEPIC_wCKPIM/production/src/init/init_acmp.o
 LOAD build/SEPIC_wCKPIM/production/src/init/init_adc.o
 LOAD build/SEPIC_wCKPIM/production/src/main.o
-LOAD build/SEPIC_wCKPIM/production/src/task_external_vref.o
-LOAD build/SEPIC_wCKPIM/production/src/task_fault_handler.o
-LOAD build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
                     0x0001                  __MPLAB_BUILD = 0x1
 LOAD p33CK256MP506
 LOAD c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\libfx-elf.a
@@ -424,83 +424,83 @@ __FBTSEQ
 
 .debug_info       0x000000       0xc736
  *(.debug_info)
- .debug_info      0x000000        0x11e build/SEPIC_wCKPIM/production/src/config_bits.o
- .debug_info      0x00011e        0x11a build/SEPIC_wCKPIM/production/src/globals.o
- .debug_info      0x000238        0x89d build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
- .debug_info      0x000ad5         0x92 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
- .debug_info      0x000b67        0xdfe build/SEPIC_wCKPIM/production/src/init/init_fosc.o
- .debug_info      0x001965        0x65e build/SEPIC_wCKPIM/production/src/init/init_timer1.o
- .debug_info      0x001fc3        0x856 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
- .debug_info      0x002819       0x26c2 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
- .debug_info      0x004edb       0x10b5 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
- .debug_info      0x005f90       0x383c build/SEPIC_wCKPIM/production/src/init/init_adc.o
- .debug_info      0x0097cc        0xdc2 build/SEPIC_wCKPIM/production/src/main.o
- .debug_info      0x00a58e        0x821 build/SEPIC_wCKPIM/production/src/task_external_vref.o
- .debug_info      0x00adaf        0xb18 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
- .debug_info      0x00b8c7        0xe6f build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_info      0x000000        0x821 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+ .debug_info      0x000821        0xb18 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+ .debug_info      0x001339        0xe6f build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_info      0x0021a8        0x11e build/SEPIC_wCKPIM/production/src/config_bits.o
+ .debug_info      0x0022c6        0x11a build/SEPIC_wCKPIM/production/src/globals.o
+ .debug_info      0x0023e0        0x89d build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+ .debug_info      0x002c7d         0x92 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
+ .debug_info      0x002d0f        0xdfe build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+ .debug_info      0x003b0d        0x65e build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+ .debug_info      0x00416b        0x856 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+ .debug_info      0x0049c1       0x26c2 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+ .debug_info      0x007083       0x10b5 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+ .debug_info      0x008138       0x383c build/SEPIC_wCKPIM/production/src/init/init_adc.o
+ .debug_info      0x00b974        0xdc2 build/SEPIC_wCKPIM/production/src/main.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0xb0e
  *(.debug_abbrev)
- .debug_abbrev    0x000000         0x1f build/SEPIC_wCKPIM/production/src/config_bits.o
- .debug_abbrev    0x00001f         0x1f build/SEPIC_wCKPIM/production/src/globals.o
- .debug_abbrev    0x00003e         0xf9 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
- .debug_abbrev    0x000137         0x14 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
- .debug_abbrev    0x00014b         0xd8 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
- .debug_abbrev    0x000223         0x9d build/SEPIC_wCKPIM/production/src/init/init_timer1.o
- .debug_abbrev    0x0002c0         0x9d build/SEPIC_wCKPIM/production/src/init/init_gpio.o
- .debug_abbrev    0x00035d         0xda build/SEPIC_wCKPIM/production/src/init/init_pwm.o
- .debug_abbrev    0x000437         0xdc build/SEPIC_wCKPIM/production/src/init/init_acmp.o
- .debug_abbrev    0x000513         0xf3 build/SEPIC_wCKPIM/production/src/init/init_adc.o
- .debug_abbrev    0x000606        0x131 build/SEPIC_wCKPIM/production/src/main.o
- .debug_abbrev    0x000737        0x168 build/SEPIC_wCKPIM/production/src/task_external_vref.o
- .debug_abbrev    0x00089f        0x131 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
- .debug_abbrev    0x0009d0        0x13e build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_abbrev    0x000000        0x168 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+ .debug_abbrev    0x000168        0x131 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+ .debug_abbrev    0x000299        0x13e build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_abbrev    0x0003d7         0x1f build/SEPIC_wCKPIM/production/src/config_bits.o
+ .debug_abbrev    0x0003f6         0x1f build/SEPIC_wCKPIM/production/src/globals.o
+ .debug_abbrev    0x000415         0xf9 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+ .debug_abbrev    0x00050e         0x14 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
+ .debug_abbrev    0x000522         0xd8 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+ .debug_abbrev    0x0005fa         0x9d build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+ .debug_abbrev    0x000697         0x9d build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+ .debug_abbrev    0x000734         0xda build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+ .debug_abbrev    0x00080e         0xdc build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+ .debug_abbrev    0x0008ea         0xf3 build/SEPIC_wCKPIM/production/src/init/init_adc.o
+ .debug_abbrev    0x0009dd        0x131 build/SEPIC_wCKPIM/production/src/main.o
 
 .debug_line       0x000000       0x1044
  *(.debug_line)
- .debug_line      0x000000         0x1a build/SEPIC_wCKPIM/production/src/config_bits.o
- .debug_line      0x00001a         0x1a build/SEPIC_wCKPIM/production/src/globals.o
- .debug_line      0x000034        0x125 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
- .debug_line      0x000159         0xa9 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
- .debug_line      0x000202        0x129 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
- .debug_line      0x00032b        0x109 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
- .debug_line      0x000434        0x102 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
- .debug_line      0x000536        0x1d1 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
- .debug_line      0x000707        0x127 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
- .debug_line      0x00082e        0x18e build/SEPIC_wCKPIM/production/src/init/init_adc.o
- .debug_line      0x0009bc        0x145 build/SEPIC_wCKPIM/production/src/main.o
- .debug_line      0x000b01        0x149 build/SEPIC_wCKPIM/production/src/task_external_vref.o
- .debug_line      0x000c4a        0x1b7 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
- .debug_line      0x000e01        0x243 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_line      0x000000        0x149 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+ .debug_line      0x000149        0x1b7 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+ .debug_line      0x000300        0x243 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_line      0x000543         0x1a build/SEPIC_wCKPIM/production/src/config_bits.o
+ .debug_line      0x00055d         0x1a build/SEPIC_wCKPIM/production/src/globals.o
+ .debug_line      0x000577        0x125 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+ .debug_line      0x00069c         0xa9 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
+ .debug_line      0x000745        0x129 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+ .debug_line      0x00086e        0x109 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+ .debug_line      0x000977        0x102 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+ .debug_line      0x000a79        0x1d1 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+ .debug_line      0x000c4a        0x127 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+ .debug_line      0x000d71        0x18e build/SEPIC_wCKPIM/production/src/init/init_adc.o
+ .debug_line      0x000eff        0x145 build/SEPIC_wCKPIM/production/src/main.o
 
 .debug_frame      0x000000        0x408
  *(.debug_frame)
- .debug_frame     0x000000         0x30 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
- .debug_frame     0x000030         0x4c build/SEPIC_wCKPIM/production/src/init/init_fosc.o
- .debug_frame     0x00007c         0x30 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
- .debug_frame     0x0000ac         0x30 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
- .debug_frame     0x0000dc         0x84 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
- .debug_frame     0x000160         0x68 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
- .debug_frame     0x0001c8         0xa0 build/SEPIC_wCKPIM/production/src/init/init_adc.o
- .debug_frame     0x000268         0x30 build/SEPIC_wCKPIM/production/src/main.o
- .debug_frame     0x000298         0x4c build/SEPIC_wCKPIM/production/src/task_external_vref.o
- .debug_frame     0x0002e4         0xa0 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
- .debug_frame     0x000384         0x84 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_frame     0x000000         0x4c build/SEPIC_wCKPIM/production/src/task_external_vref.o
+ .debug_frame     0x00004c         0xa0 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+ .debug_frame     0x0000ec         0x84 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_frame     0x000170         0x30 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+ .debug_frame     0x0001a0         0x4c build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+ .debug_frame     0x0001ec         0x30 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+ .debug_frame     0x00021c         0x30 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+ .debug_frame     0x00024c         0x84 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+ .debug_frame     0x0002d0         0x68 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+ .debug_frame     0x000338         0xa0 build/SEPIC_wCKPIM/production/src/init/init_adc.o
+ .debug_frame     0x0003d8         0x30 build/SEPIC_wCKPIM/production/src/main.o
 
 .debug_str        0x000000        0x891
  *(.debug_str)
- .debug_str       0x000000        0x14c build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
- .debug_str       0x00014c         0x5e build/SEPIC_wCKPIM/production/src/init/init_fosc.o
- .debug_str       0x0001aa         0x25 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
- .debug_str       0x0001cf         0x26 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
- .debug_str       0x0001f5        0x2ce build/SEPIC_wCKPIM/production/src/init/init_pwm.o
- .debug_str       0x0004c3         0xda build/SEPIC_wCKPIM/production/src/init/init_acmp.o
- .debug_str       0x00059d        0x23d build/SEPIC_wCKPIM/production/src/init/init_adc.o
- .debug_str       0x0007da         0x39 build/SEPIC_wCKPIM/production/src/main.o
- .debug_str       0x000813         0x12 build/SEPIC_wCKPIM/production/src/task_external_vref.o
- .debug_str       0x000825         0x1c build/SEPIC_wCKPIM/production/src/task_fault_handler.o
- .debug_str       0x000841         0x50 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_str       0x000000         0x12 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+ .debug_str       0x000012         0x1c build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+ .debug_str       0x00002e         0x50 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+ .debug_str       0x00007e        0x14c build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+ .debug_str       0x0001ca         0x5e build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+ .debug_str       0x000228         0x25 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+ .debug_str       0x00024d         0x26 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+ .debug_str       0x000273        0x2ce build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+ .debug_str       0x000541         0xda build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+ .debug_str       0x00061b        0x23d build/SEPIC_wCKPIM/production/src/init/init_adc.o
+ .debug_str       0x000858         0x39 build/SEPIC_wCKPIM/production/src/main.o
 
 .debug_loc
  *(.debug_loc)
@@ -512,27 +512,27 @@ __FBTSEQ
                   0x000000        0x4fb
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000        0x1a7 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+                  0x000000         0x57 build/SEPIC_wCKPIM/production/src/task_external_vref.o
  .debug_pubnames
-                  0x0001a7         0x2e build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+                  0x000057         0xb4 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
  .debug_pubnames
-                  0x0001d5         0x22 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+                  0x00010b         0x85 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
  .debug_pubnames
-                  0x0001f7         0x20 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+                  0x000190        0x1a7 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
  .debug_pubnames
-                  0x000217         0x66 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+                  0x000337         0x2e build/SEPIC_wCKPIM/production/src/init/init_fosc.o
  .debug_pubnames
-                  0x00027d         0x51 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+                  0x000365         0x22 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
  .debug_pubnames
-                  0x0002ce         0x6a build/SEPIC_wCKPIM/production/src/init/init_adc.o
+                  0x000387         0x20 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
  .debug_pubnames
-                  0x000338         0x33 build/SEPIC_wCKPIM/production/src/main.o
+                  0x0003a7         0x66 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
  .debug_pubnames
-                  0x00036b         0x57 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+                  0x00040d         0x51 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
  .debug_pubnames
-                  0x0003c2         0xb4 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+                  0x00045e         0x6a build/SEPIC_wCKPIM/production/src/init/init_adc.o
  .debug_pubnames
-                  0x000476         0x85 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+                  0x0004c8         0x33 build/SEPIC_wCKPIM/production/src/main.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -540,29 +540,29 @@ __FBTSEQ
 .debug_aranges    0x000000        0x120
  *(.debug_aranges)
  .debug_aranges
-                  0x000000         0x18 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+                  0x000000         0x18 build/SEPIC_wCKPIM/production/src/task_external_vref.o
  .debug_aranges
-                  0x000018         0x18 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
+                  0x000018         0x18 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
  .debug_aranges
-                  0x000030         0x18 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+                  0x000030         0x18 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
  .debug_aranges
-                  0x000048         0x18 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+                  0x000048         0x18 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
  .debug_aranges
-                  0x000060         0x18 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+                  0x000060         0x18 build/SEPIC_wCKPIM/production/src/c2p2z_sepic_asm.o
  .debug_aranges
-                  0x000078         0x18 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+                  0x000078         0x18 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
  .debug_aranges
-                  0x000090         0x18 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+                  0x000090         0x18 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
  .debug_aranges
-                  0x0000a8         0x18 build/SEPIC_wCKPIM/production/src/init/init_adc.o
+                  0x0000a8         0x18 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
  .debug_aranges
-                  0x0000c0         0x18 build/SEPIC_wCKPIM/production/src/main.o
+                  0x0000c0         0x18 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
  .debug_aranges
-                  0x0000d8         0x18 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+                  0x0000d8         0x18 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
  .debug_aranges
-                  0x0000f0         0x18 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+                  0x0000f0         0x18 build/SEPIC_wCKPIM/production/src/init/init_adc.o
  .debug_aranges
-                  0x000108         0x18 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+                  0x000108         0x18 build/SEPIC_wCKPIM/production/src/main.o
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -4095,68 +4095,68 @@ LOAD data_init
 .debug_pubtypes
                   0x000120       0x1549
  .debug_pubtypes
-                  0x000120         0x12 build/SEPIC_wCKPIM/production/src/config_bits.o
+                  0x000120        0x116 build/SEPIC_wCKPIM/production/src/task_external_vref.o
  .debug_pubtypes
-                  0x000132         0x12 build/SEPIC_wCKPIM/production/src/globals.o
+                  0x000236        0x16f build/SEPIC_wCKPIM/production/src/task_fault_handler.o
  .debug_pubtypes
-                  0x000144         0xe4 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+                  0x0003a5        0x1bd build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
  .debug_pubtypes
-                  0x000228        0x133 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+                  0x000562         0x12 build/SEPIC_wCKPIM/production/src/config_bits.o
  .debug_pubtypes
-                  0x00035b         0x95 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+                  0x000574         0x12 build/SEPIC_wCKPIM/production/src/globals.o
  .debug_pubtypes
-                  0x0003f0         0x97 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+                  0x000586         0xe4 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
  .debug_pubtypes
-                  0x000487        0x487 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+                  0x00066a        0x133 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
  .debug_pubtypes
-                  0x00090e        0x1b2 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+                  0x00079d         0x95 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
  .debug_pubtypes
-                  0x000ac0        0x5ba build/SEPIC_wCKPIM/production/src/init/init_adc.o
+                  0x000832         0x97 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
  .debug_pubtypes
-                  0x00107a        0x1ad build/SEPIC_wCKPIM/production/src/main.o
+                  0x0008c9        0x487 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
  .debug_pubtypes
-                  0x001227        0x116 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+                  0x000d50        0x1b2 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
  .debug_pubtypes
-                  0x00133d        0x16f build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+                  0x000f02        0x5ba build/SEPIC_wCKPIM/production/src/init/init_adc.o
  .debug_pubtypes
-                  0x0014ac        0x1bd build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+                  0x0014bc        0x1ad build/SEPIC_wCKPIM/production/src/main.o
 
 __c30_signature
                   0x001669         0x5a
  __c30_signature
-                  0x001669          0x6 build/SEPIC_wCKPIM/production/src/config_bits.o
+                  0x001669          0x6 build/SEPIC_wCKPIM/production/src/task_external_vref.o
  __c30_signature
-                  0x00166f          0x6 build/SEPIC_wCKPIM/production/src/globals.o
+                  0x00166f          0x6 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
  __c30_signature
-                  0x001675          0x6 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+                  0x001675          0x6 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
  __c30_signature
-                  0x00167b          0x6 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
+                  0x00167b          0x6 build/SEPIC_wCKPIM/production/src/config_bits.o
  __c30_signature
-                  0x001681          0x6 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
+                  0x001681          0x6 build/SEPIC_wCKPIM/production/src/globals.o
  __c30_signature
-                  0x001687          0x6 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
+                  0x001687          0x6 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
  __c30_signature
-                  0x00168d          0x6 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
+                  0x00168d          0x6 build/SEPIC_wCKPIM/production/src/init/init_fosc.o
  __c30_signature
-                  0x001693          0x6 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
+                  0x001693          0x6 build/SEPIC_wCKPIM/production/src/init/init_timer1.o
  __c30_signature
-                  0x001699          0x6 build/SEPIC_wCKPIM/production/src/init/init_adc.o
+                  0x001699          0x6 build/SEPIC_wCKPIM/production/src/init/init_gpio.o
  __c30_signature
-                  0x00169f          0x6 build/SEPIC_wCKPIM/production/src/main.o
+                  0x00169f          0x6 build/SEPIC_wCKPIM/production/src/init/init_pwm.o
  __c30_signature
-                  0x0016a5          0x6 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+                  0x0016a5          0x6 build/SEPIC_wCKPIM/production/src/init/init_acmp.o
  __c30_signature
-                  0x0016ab          0x6 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
+                  0x0016ab          0x6 build/SEPIC_wCKPIM/production/src/init/init_adc.o
  __c30_signature
-                  0x0016b1          0x6 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
+                  0x0016b1          0x6 build/SEPIC_wCKPIM/production/src/main.o
  __c30_signature
                   0x0016b7          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedch.o)
  __c30_signature
                   0x0016bd          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extendedch.o)
 
-_051E83C05d40d374
+_050333C05d40d8c3
                     0x1000         0x14
- _051E83C05d40d374
+ _050333C05d40d8c3
                     0x1000         0x14 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
                     0x1000                  _c2p2z_sepic_coefficients
 
@@ -4170,16 +4170,16 @@ _051E83C05d40d374
                     0x1024                  _c2p2z_sepic_pre_scaler
 
 .nbss               0x1026         0x14
- .nbss              0x1026          0x6 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
-                    0x1026                  _c2p2z_sepic_post_shift_A
-                    0x1028                  _c2p2z_sepic_post_shift_B
-                    0x102a                  _c2p2z_sepic_post_scaler
- .nbss              0x102c          0x6 build/SEPIC_wCKPIM/production/src/main.o
-                    0x102c                  _tgl_cnt
-                    0x102e                  _dac_cnt
- .nbss              0x1032          0x6 build/SEPIC_wCKPIM/production/src/task_external_vref.o
-                    0x1032                  _vref_avg
-                    0x1036                  _avg_cnt
+ .nbss              0x1026          0x6 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+                    0x1026                  _vref_avg
+                    0x102a                  _avg_cnt
+ .nbss              0x102c          0x6 build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
+                    0x102c                  _c2p2z_sepic_post_shift_A
+                    0x102e                  _c2p2z_sepic_post_shift_B
+                    0x1030                  _c2p2z_sepic_post_scaler
+ .nbss              0x1032          0x6 build/SEPIC_wCKPIM/production/src/main.o
+                    0x1032                  _tgl_cnt
+                    0x1034                  _dac_cnt
  .nbss              0x1038          0x2 build/SEPIC_wCKPIM/production/src/task_fault_handler.o
                     0x1038                  _release_counter
 
@@ -4201,6 +4201,16 @@ _051E83C05d40d374
 .data               0x10ae          0xc
  .data              0x10ae          0xc build/SEPIC_wCKPIM/production/src/c2p2z_sepic.o
                     0x10ae                  _c2p2z_sepic_BCoefficients
+
+.ivt._ADCAN6Interrupt
+                  0x0000d6          0x2
+ .ivt._ADCAN6Interrupt
+                  0x0000d6          0x2 build/SEPIC_wCKPIM/production/src/task_external_vref.o
+
+.ivt._ADCAN16Interrupt
+                  0x0000ea          0x2
+ .ivt._ADCAN16Interrupt
+                  0x0000ea          0x2 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
 
 .config_BTMODE    0x801800          0x2
  .config_BTMODE
@@ -4263,16 +4273,6 @@ _051E83C05d40d374
 
 .config_BSLIM     0x02bf10          0x2
  .config_BSLIM    0x02bf10          0x2 build/SEPIC_wCKPIM/production/src/config_bits.o
-
-.ivt._ADCAN6Interrupt
-                  0x0000d6          0x2
- .ivt._ADCAN6Interrupt
-                  0x0000d6          0x2 build/SEPIC_wCKPIM/production/src/task_external_vref.o
-
-.ivt._ADCAN16Interrupt
-                  0x0000ea          0x2
- .ivt._ADCAN16Interrupt
-                  0x0000ea          0x2 build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
 
 .text             0x0003c6        0xe52
  .text            0x0003c6        0x2fa build/SEPIC_wCKPIM/production/src/task_pwr_control_sepic.o
