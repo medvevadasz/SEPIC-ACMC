@@ -59,7 +59,7 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
       <itemPath>sepic_ctrl.dcld</itemPath>
-      <itemPath>short_description</itemPath>
+      <itemPath>readme.txt</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
