@@ -4,6 +4,13 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f3" displayName="apps" projectFiles="true">
+        <itemPath>h/ext_reference.h</itemPath>
+        <itemPath>h/pwr_control_sepic.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f4" displayName="config" projectFiles="true">
+        <itemPath>h/globals.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f2" displayName="control" projectFiles="true">
         <itemPath>h/c2p2z_sepic.h</itemPath>
         <itemPath>h/npnz16b.h</itemPath>
@@ -17,9 +24,6 @@
         <itemPath>h/init/init_adc.h</itemPath>
       </logicalFolder>
       <itemPath>h/main.h</itemPath>
-      <itemPath>h/sepic_pwr_control.h</itemPath>
-      <itemPath>h/ext_reference.h</itemPath>
-      <itemPath>h/globals.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -28,6 +32,14 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f3" displayName="apps" projectFiles="true">
+        <itemPath>src/ext_reference.c</itemPath>
+        <itemPath>src/pwr_control_sepic.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f4" displayName="config" projectFiles="true">
+        <itemPath>src/config_bits.c</itemPath>
+        <itemPath>src/globals.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="f2" displayName="control" projectFiles="true">
         <itemPath>src/c2p2z_sepic.c</itemPath>
         <itemPath>src/c2p2z_sepic_asm.s</itemPath>
@@ -41,10 +53,6 @@
         <itemPath>src/init/init_adc.c</itemPath>
       </logicalFolder>
       <itemPath>src/main.c</itemPath>
-      <itemPath>src/config_bits.c</itemPath>
-      <itemPath>src/sepic_pwr_control.c</itemPath>
-      <itemPath>src/ext_reference.c</itemPath>
-      <itemPath>src/globals.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

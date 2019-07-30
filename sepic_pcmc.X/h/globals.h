@@ -46,7 +46,7 @@
 #include "init/init_adc.h"
 #include "init/init_pwm.h"
 
-#include "sepic_pwr_control.h"
+#include "pwr_control_sepic.h"
 #include "ext_reference.h"
 
 
