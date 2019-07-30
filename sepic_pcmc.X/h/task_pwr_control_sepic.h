@@ -91,7 +91,7 @@ typedef struct {
     volatile uint16_t ramp_ref_increment;   // Soft-Start Single Reference Increment per Step
     volatile uint16_t pwr_good_delay;       // Soft-Start Power Good Delay
     volatile uint16_t counter;              // Soft-Start Execution Counter
-    volatile uint16_t phase;                // Soft-Start Phase Index
+    volatile SEPIC_SOFT_START_STATUS_e phase; // Soft-Start Phase Index
 }SEPIC_SOFT_START_t;                        // SEPIC soft-start settings and variables
 
 // ==============================================================================================

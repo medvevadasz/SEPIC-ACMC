@@ -26,7 +26,7 @@ volatile uint16_t init_sepic_pwr_control(void) {
     sepic.soft_start.pwr_on_delay = SEPIC_PODLY;            // Soft-Start Power-On Delay = 500 ms
     sepic.soft_start.ramp_period = SEPIC_RPER;              // Soft-Start Ramp Period = 50 ms
     sepic.soft_start.pwr_good_delay = SEPIC_PGDLY;          // Soft-Start Power Good Delay = 200 ms
-    sepic.soft_start.reference = SEPIC_V_OUT_REF;           // Soft-Start Target Reference = 12V
+    sepic.soft_start.reference = SEPIC_VOUT_REF;           // Soft-Start Target Reference = 12V
     sepic.soft_start.ramp_ref_increment = SEPIC_REF_STEP;   // Soft-Start Single Step Increment of Reference
 
     if(sepic.soft_start.ramp_ref_increment == 0) {          // Protecting startup settings against 
@@ -43,9 +43,9 @@ volatile uint16_t init_sepic_pwr_control(void) {
     c2p2z_sepic.ptrTarget = &SEPIC_DAC_VREF_REGISTER;
     c2p2z_sepic.MaxOutput = DAC_MAX;
     c2p2z_sepic.MinOutput = DAC_MIN;
-    c2p2z_sepic.status.flag.enable = 0;
+    c2p2z_sepic.status.flag.enable = false;
     
-    sepic.data.v_ref    = 0; // Reset SEPIC reference value (will be set via external potentiometer)
+    sepic.data.v_ref = 0; // Reset SEPIC reference value (will be set via external potentiometer)
     
     return(1);
 }
@@ -113,7 +113,7 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
             // Force PWM output and controller to OFF state
             PG1IOCONLbits.OVRENH = 1;           // Disable PWMxH output
-            c2p2z_sepic.status.flag.enable = 0; // Disable the control loop
+            c2p2z_sepic.status.flag.enable = false; // Disable the control loop
             sepic.status.flags.pwm_active = false;   // Clear PWM_ACTIVE flag bit
 
             // wait for fault to be cleared, adc to run and the GO bit to be set
@@ -138,6 +138,7 @@ DBGPIN_2_SET;
             if(sepic.soft_start.counter++ > sepic.soft_start.pwr_on_delay)
             {
                 sepic.soft_start.reference = 0;  // Reset soft-start reference to minimum
+                c2p2z_sepic_Reset(&c2p2z_sepic); // Reset control loop histories
                 c2p2z_sepic.ptrControlReference = &sepic.soft_start.reference; // Hijack controller reference
 
                 sepic.soft_start.counter = 0;                   // Reset soft-start counter
@@ -156,7 +157,7 @@ DBGPIN_2_CLEAR;
 
             // Force PWM output and controller to be active 
             PG1IOCONLbits.OVRENH = 0;           // User override disabled for PWMxH Pin =< PWM signal output starts
-            c2p2z_sepic.status.flag.enable = 1; // Start the control loop 
+            c2p2z_sepic.status.flag.enable = true; // Start the control loop 
 
             sepic.soft_start.reference += sepic.soft_start.ramp_ref_increment;  // increment reference
             
@@ -198,12 +199,19 @@ DBGPIN_2_CLEAR;
          * the power controller sets the FAULT flag bit, enforces detection of the ADC activity 
          * by clearing the adc_active bit and switches the state machine into STANDBY, from
          * which the power controller may recover as soon as all startup conditions are met again. */
-        default: // If something is going wrong, reset PWR controller to STANDBY
+        default: // If something went wrong, reset PWR controller to STANDBY
 
             sepic.status.flags.op_status = SEPIC_STAT_FAULT; // Set SEPIC status to FAULT mode
-            sepic.status.flags.fault_active = true;          // Set FAULT flag bit
-            sepic.status.flags.adc_active = false;           // Clear ADC_READY flag bit
+            sepic.status.flags.fault_active = true;         // Set FAULT flag bit
 
+            PG1IOCONLbits.OVRENH = 1;                       // Disable PWMxH output
+            c2p2z_sepic.status.flag.enable = false;         // Disable the control loop
+            sepic.status.flags.enabled = false;             // Disable power controller
+
+            sepic.status.flags.adc_active = false;          // Clear ADC_READY flag bit
+            sepic.status.flags.pwm_active = false;          // Clear PWM_ACTIVE flag bit
+            sepic.status.flags.GO = false;                  // Reset power supply start trigger GO bit
+            
             sepic.soft_start.phase = SEPIC_SS_STANDBY;
             break;
             
@@ -214,7 +222,7 @@ DBGPIN_2_CLEAR;
      * and 'GO' are automatically set and continuously enforced to ensure the power supply
      * will enter RAMP UP from STANDBY without the need for user code intervention. */
     // 
-    if (sepic.status.flags.auto_start == true) {
+    if( (sepic.status.flags.auto_start == true) && (sepic.status.flags.fault_active == false)) {
         sepic.status.flags.enabled = true;  // Auto-Enable power converter
         sepic.status.flags.GO = true;       // Auto-Kick-off power converter
     }
@@ -236,6 +244,7 @@ void __attribute__((__interrupt__, auto_psv, context))_SEPIC_VOUT_ADCInterrupt(v
     
     sepic.status.flags.adc_active = true;
     sepic.data.v_out = SEPIC_VOUT_ADCBUF;
+    sepic.data.v_in = SEPIC_VIN_ADCBUF;
 
     c2p2z_sepic_Update(&c2p2z_sepic);
 

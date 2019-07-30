@@ -5,8 +5,9 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f3" displayName="apps" projectFiles="true">
-        <itemPath>h/ext_reference.h</itemPath>
-        <itemPath>h/pwr_control_sepic.h</itemPath>
+        <itemPath>h/task_external_vref.h</itemPath>
+        <itemPath>h/task_fault_handler.h</itemPath>
+        <itemPath>h/task_pwr_control_sepic.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="config" projectFiles="true">
         <itemPath>h/globals.h</itemPath>
@@ -33,8 +34,9 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="f3" displayName="apps" projectFiles="true">
-        <itemPath>src/ext_reference.c</itemPath>
-        <itemPath>src/pwr_control_sepic.c</itemPath>
+        <itemPath>src/task_external_vref.c</itemPath>
+        <itemPath>src/task_fault_handler.c</itemPath>
+        <itemPath>src/task_pwr_control_sepic.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="config" projectFiles="true">
         <itemPath>src/config_bits.c</itemPath>

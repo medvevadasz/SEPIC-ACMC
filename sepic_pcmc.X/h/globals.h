@@ -46,8 +46,9 @@
 #include "init/init_adc.h"
 #include "init/init_pwm.h"
 
-#include "pwr_control_sepic.h"
-#include "ext_reference.h"
+#include "task_pwr_control_sepic.h"
+#include "task_external_vref.h"
+#include "task_fault_handler.h"
 
 
 #ifdef	__cplusplus
@@ -211,14 +212,37 @@ extern "C" {
  * 
  * *************************************************************************************************/
     
-#define SEPIC_VOUT_NOMINAL  15.0            // Nominal output voltage
+#define SEPIC_VOUT_NOMINAL          15.0    // Nominal output voltage in [V]
+#define SEPIC_VOUT_MAXIMUM          24.0    // Maximum output voltage in [V]
+#define SEPIC_VOUT_HYSTERESIS       1.0     // Output voltage protection hysteresis in [V]
+#define SEPIC_VOUT_UPPER_DEVIATION  0.8     // Upper output voltage deviation from reference in [V]
+#define SEPIC_VOUT_LOWER_DEVIATION  0.4     // Lower output voltage deviation from reference in [V]
 
-#define SEPIC_VOUT_R1       (2.0 * 2.87)    // Upper voltage divider resistor in kOhm
-#define SEPIC_VOUT_R2       (1.0)           // Lower voltage divider resistor in kOhm
+#define SEPIC_VOUT_R1           (2.0 * 2.87) // Upper voltage divider resistor in kOhm
+#define SEPIC_VOUT_R2           1.0          // Lower voltage divider resistor in kOhm
 
-#define SEPIC_VOUT_FB_GAIN  (float)((SEPIC_VOUT_R2) / (SEPIC_VOUT_R1 + SEPIC_VOUT_R2))
-#define SEPIC_V_OUT_REF     (uint16_t)(SEPIC_VOUT_NOMINAL * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+//~~~~~~~~~~~~~~~~~
+#define SEPIC_VOUT_FB_GAIN      (float)((SEPIC_VOUT_R2) / (SEPIC_VOUT_R1 + SEPIC_VOUT_R2))
+#define SEPIC_VOUT_REF          (uint16_t)(SEPIC_VOUT_NOMINAL * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define SEPIC_VOUT_OVP          (uint16_t)(SEPIC_VOUT_MAXIMUM * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define SEPIC_VOUT_HYST         (uint16_t)(SEPIC_VOUT_HYSTERESIS * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define SEPIC_VOUT_UDEVI        (uint16_t)(SEPIC_VOUT_UPPER_DEVIATION * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
+#define SEPIC_VOUT_LDEVI        (uint16_t)(SEPIC_VOUT_LOWER_DEVIATION * SEPIC_VOUT_FB_GAIN / ADC_GRAN)
 
+//~~~~~~~~~~~~~~~~~
+#define SEPIC_VIN_MINIMUM       7.0             // Minimum input voltage in [V]
+#define SEPIC_VIN_MAXIMUM       20.0            // Maximum input voltage in [V]
+#define SEPIC_VIN_HYSTERESIS    1.0             // Input voltage protection hysteresis in [V]
+    
+#define SEPIC_VIN_R1            15.8            // Upper voltage divider resistor in kOhm
+#define SEPIC_VIN_R2            1.0             // Lower voltage divider resistor in kOhm
+
+#define SEPIC_VIN_FB_GAIN       (float)((SEPIC_VIN_R2) / (SEPIC_VIN_R1 + SEPIC_VIN_R2))
+#define SEPIC_VIN_UVLO          (uint16_t)(SEPIC_VIN_MINIMUM * SEPIC_VIN_FB_GAIN / ADC_GRAN)
+#define SEPIC_VIN_OVLO          (uint16_t)(SEPIC_VIN_MAXIMUM * SEPIC_VIN_FB_GAIN / ADC_GRAN)
+#define SEPIC_VIN_HYST          (uint16_t)(SEPIC_VIN_HYSTERESIS * SEPIC_VIN_FB_GAIN / ADC_GRAN)
+
+    
 /*!Startup Behavior
  * *************************************************************************************************
  * Summary:
@@ -236,15 +260,36 @@ extern "C" {
  * 
  * *************************************************************************************************/
 
-#define SEPIC_POWER_ON_DELAY          500e-3      // power on delay in [sec]
-#define SEPIC_RAMP_PERIOD             50e-3         // ramp period in [sec]
-#define SEPIC_POWER_GOOD_DELAY        100e-3        // power good in [sec]
+#define SEPIC_POWER_ON_DELAY    500e-3      // power on delay in [sec]
+#define SEPIC_RAMP_PERIOD       50e-3         // ramp period in [sec]
+#define SEPIC_POWER_GOOD_DELAY  100e-3        // power good in [sec]
 
 #define SEPIC_PODLY     (uint16_t)((SEPIC_POWER_ON_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_PGDLY     (uint16_t)((SEPIC_POWER_GOOD_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_REF_STEP  (uint16_t)((SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0)))
+#define SEPIC_REF_STEP  (uint16_t)((SEPIC_VOUT_REF / (SEPIC_RPER + 1.0)))
 
+/*!FAULT Shut Down and Recover
+ * *************************************************************************************************
+ * Summary:
+ * Global defines for FAULT specific parameters
+ * 
+ * Description:
+ * The parameters defined in this section specify FAULT shut down and recovery delay filters.
+ * Delay filters are adjustable in n x main execution period (e.g. n x 100usec).
+ * 
+ * Pre-compiler macros are used to translate physical values into binary (integer) numbers to 
+ * be written to SFRs and variables.
+ * 
+ * *************************************************************************************************/
+
+#define SEPIC_FAULT_SHUT_DOWN_DELAY   1e-3          // shut down delay in [sec]
+#define SEPIC_FAULT_RECOVERY_DELAY    1000e-3       // recovery delay in [sec]
+
+#define SEPIC_FLTTRP_DLY (uint16_t)((SEPIC_FAULT_SHUT_DOWN_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_RCVRY_DLY  (uint16_t)((SEPIC_FAULT_RECOVERY_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
+
+    
 /*!SEPIC_POWER_CONTROLLER_t data structure sepic
  * *************************************************************************************************
  * Summary:
@@ -265,6 +310,7 @@ extern "C" {
  * *************************************************************************************************/
 
 #define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt   
+#define SEPIC_VIN_ADCBUF                ADCBUF12
 #define SEPIC_VOUT_ADCBUF               ADCBUF16
 #define SEPIC_VOUT_ADCTRIG              PG2TRIGA
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0

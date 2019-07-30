@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #include "globals.h"
-#include "ext_reference.h"
+#include "task_external_vref.h"
 
 volatile uint32_t vref_avg=0;   // local buffer variable of the oversampling filter of the external reference voltage signal
 volatile uint16_t avg_cnt = 0;  // local buffer variable for the averaging filter counter steps
@@ -54,7 +54,7 @@ void __attribute__((__interrupt__, auto_psv, context)) _ADCAN6Interrupt(void)
         #if (USE_EXTERNAL_REFERENCE==true) // Only override reference value when user-option is enabled
         sepic.data.v_ref = (vref_avg >> 8);  // Copy averaged value into reference value
         #else
-        sepic.data.v_ref = SEPIC_V_OUT_REF;
+        sepic.data.v_ref = SEPIC_VOUT_REF;
         #endif
         vref_avg = 0;                       // Reset averaging buffer
     }

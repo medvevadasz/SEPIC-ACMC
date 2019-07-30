@@ -34,6 +34,7 @@ int main(void) {
     init_acmp_module(); // Set up analog comparator/DAC module
     init_adc_module();  // Set up Analog-To-Digital converter module
     init_vin_adc();     // Initialize ADC Channel to measure input voltage
+    fault_check_init(); // Initialize fault monitor objects
     
     ext_reference_init();   // initialize external reference input
     
@@ -69,7 +70,8 @@ __builtin_write_RPCON(0x0800);
 //        DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
 
         exec_sepic_pwr_control();
-               
+        fault_check_exec();
+        
         if(sepic.status.flags.op_status == SEPIC_STAT_ON) {
             DBGLED_GN_SET;
             DBGLED_RD_CLEAR;
