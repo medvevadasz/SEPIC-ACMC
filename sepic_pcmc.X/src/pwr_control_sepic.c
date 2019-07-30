@@ -151,20 +151,22 @@ volatile uint16_t exec_sepic_pwr_control(void) {
          * reference level set in sepic.data.v_ref, the ramp-up period ends and the state machine 
          * automatically switches to POWER GOOD DELAY mode */     
         case SEPIC_SS_RAMP_UP: // Increasing reference by 4 every scheduler cycle
-            
+DBGPIN_2_SET;
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
 
             // Force PWM output and controller to be active 
             PG1IOCONLbits.OVRENH = 0;           // User override disabled for PWMxH Pin =< PWM signal output starts
             c2p2z_sepic.status.flag.enable = 1; // Start the control loop 
 
-            sepic.soft_start.reference += 4;  // increment reference
+            sepic.soft_start.reference += sepic.soft_start.ramp_ref_increment;  // increment reference
             
             // check if ramp is complete
             if (sepic.soft_start.reference >= sepic.data.v_ref)
             {
                 sepic.soft_start.counter = 0;                       // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_PWR_GOOD_DELAY; // switch to Power Good Delay mode
+DBGPIN_2_CLEAR;
+                
             }
             break; 
             

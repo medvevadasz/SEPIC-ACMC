@@ -17,6 +17,9 @@ volatile uint16_t init_gpio(void) {
     ANSELD = 0x0000;
     
     DBGLED_INIT;
+    DBGLED_GN_INIT;
+    DBGLED_RD_INIT;
+    
     DBGPIN_1_INIT;
     DBGPIN_2_INIT;
     DBGPIN_3_INIT;

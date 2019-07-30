@@ -56,8 +56,8 @@ __builtin_write_RPCON(0x0800);
     // Enable Timer1
     T1CONbits.TON = 1; 
     
-    DBGPIN_2_CLEAR;
-    DBGPIN_3_CLEAR;
+    DBGLED_GN_CLEAR;
+    DBGLED_RD_SET;
     
     while (1) {
 
@@ -69,6 +69,17 @@ __builtin_write_RPCON(0x0800);
 
         exec_sepic_pwr_control();
                
+        if(sepic.status.flags.op_status == SEPIC_STAT_ON) {
+            DBGLED_GN_SET;
+            DBGLED_RD_CLEAR;
+        }
+        else {
+            DBGLED_GN_CLEAR;
+            DBGLED_RD_SET;
+        }
+        
+        
+
         if (tgl_cnt++ > TGL_INTERVAL) // Count 100usec loops until LED toggle interval is exceeded
         {
             DBGLED_TOGGLE;

@@ -39,6 +39,7 @@
 #include "globals.h"
 
 #ifdef _SEPIC_wCKDPPIM_
+
     // Red LED on CK_DP_PIM
     #define DBGLED_SET		{ _LATD15 = 1; }
     #define DBGLED_CLEAR	{ _LATD15 = 0; }
@@ -51,17 +52,29 @@
     #define DBGPIN_1_TOGGLE	{ _LATD12 ^= 1; }
     #define DBGPIN_1_INIT	{ _LATD12 = 0; _TRISD12 = 0; }
 
-    // Green LED on SEPIC
-    #define DBGPIN_2_SET	{ _LATB6 = 1; }
-    #define DBGPIN_2_CLEAR	{ _LATB6 = 0; }
-    #define DBGPIN_2_TOGGLE	{ _LATB6 ^= 1; }
-    #define DBGPIN_2_INIT	{ _LATB6 = 0; _TRISB6 = 0; }
+    // Green LED on SEPIC Board
+    #define DBGLED_GN_SET       { _LATB6 = 1; }
+    #define DBGLED_GN_CLEAR     { _LATB6 = 0; }
+    #define DBGLED_GN_TOGGLE	{ _LATB6 ^= 1; }
+    #define DBGLED_GN_INIT      { _LATB6 = 0; _TRISB6 = 0; }
 
-    // Red LED on SEPIC
-    #define DBGPIN_3_SET	{ _LATB5 = 1; }
-    #define DBGPIN_3_CLEAR	{ _LATB5 = 0; }
-    #define DBGPIN_3_TOGGLE	{ _LATB5 ^= 1; }
-    #define DBGPIN_3_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
+    // Red LED on SEPIC Board
+    #define DBGLED_RD_SET       { _LATB5 = 1; }
+    #define DBGLED_RD_CLEAR     { _LATB5 = 0; }
+    #define DBGLED_RD_TOGGLE	{ _LATB5 ^= 1; }
+    #define DBGLED_RD_INIT      { _LATB5 = 0; _TRISB5 = 0; }
+
+    // RX-Pin on SEPIC Board
+    #define DBGPIN_2_SET	{ _LATD5 = 1; }
+    #define DBGPIN_2_CLEAR	{ _LATD5 = 0; }
+    #define DBGPIN_2_TOGGLE	{ _LATD5 ^= 1; }
+    #define DBGPIN_2_INIT	{ _LATD5 = 0; _TRISD5 = 0; }
+
+    // TX-Pin on SEPIC Board
+    #define DBGPIN_3_SET	{ _LATD6 = 1; }
+    #define DBGPIN_3_CLEAR	{ _LATD6 = 0; }
+    #define DBGPIN_3_TOGGLE	{ _LATD6 ^= 1; }
+    #define DBGPIN_3_INIT	{ _LATD6 = 0; _TRISD6 = 0; }
 #endif
 
 #ifdef _DPDB_wCKDPPIM_

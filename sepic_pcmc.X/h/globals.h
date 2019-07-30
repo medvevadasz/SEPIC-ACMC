@@ -81,9 +81,9 @@ extern "C" {
  * 
  * *************************************************************************************************/
 
-#define CPU_FREQUENCY       100000000   // CPU frequency in [Hz]
-#define AUX_FREQUENCY       500000000   // Auxiliary Clock Frequency in [Hz]
-#define PWM_FREQUENCY       500000000   // PWM Generator Base Clock Frequency in [Hz]
+#define CPU_CLK_FREQUENCY       100000000   // CPU frequency in [Hz]
+#define AUX_CLK_FREQUENCY       500000000   // Auxiliary Clock Frequency in [Hz]
+#define PWM_CLK_FREQUENCY       500000000   // PWM Generator Base Clock Frequency in [Hz]
     
 /*!State Machine Settings
  * *************************************************************************************************
@@ -98,7 +98,7 @@ extern "C" {
  * *************************************************************************************************/
     
 #define MAIN_EXECUTION_PERIOD    100e-6     // main state machine pace period in [sec]
-#define MAIN_EXEC_PER           (uint16_t)((CPU_FREQUENCY * MAIN_EXECUTION_PERIOD)-1.0)
+#define MAIN_EXEC_PER           (uint16_t)((CPU_CLK_FREQUENCY * MAIN_EXECUTION_PERIOD)-1.0)
 
 /*!ADC Settings
  * *************************************************************************************************
@@ -134,13 +134,13 @@ extern "C" {
 #define DAC_MINIMUM      0.650   // Minimum DAC voltage in [V]
 #define DAC_MAXIMUM      3.100   // Maximum DAC voltage in [V]
 #define SLEW_RATE        0.120   // Compensation ramp in [V/usec] (SLPxDAT is calculated below)
-                                 // Slope resolution is 12.4 mV/tick
+                                 // (slope resolution is ~12.4 mV/tick @ 4ns tick rate)
 
 //-------    
 #define DAC_REF         (double)3.300           // DAC reference voltage (usually AVDD)
 #define DAC_RES         (double)12.00           // DAC resolution in [bit]
 #define DAC_GRAN        (double)(DAC_REF / pow(2, DAC_RES))  // DAC granularity in [V/tick]
-#define FDAC            (double)AUX_FREQUENCY   // DAC input clock in Hz
+#define FDAC            (double)AUX_CLK_FREQUENCY   // DAC input clock in Hz
 #define DACCLK          (double)(2.0/FDAC)      // DAC input clock (period) selected in [sec]
 
 //-------    
@@ -174,7 +174,7 @@ extern "C" {
 #define SWITCHING_FREQUENCY         350e+3      // Power Supply Switching Frequency in [Hz]
 //------ macros
 #define SWITCHING_PERIOD            (1.0/SWITCHING_FREQUENCY)   // Power Supply Switching Period in [sec]
-#define PWM_RES                     (1.0/AUX_FREQUENCY)         // PWM Resolution
+#define PWM_RES                     (1.0/AUX_CLK_FREQUENCY)         // PWM Resolution
 #define PWM_PERIOD                  (uint16_t)(SWITCHING_PERIOD / PWM_RES)      // Measured in [tick = 2ns]
 //------ 
 
@@ -243,7 +243,7 @@ extern "C" {
 #define SEPIC_PODLY     (uint16_t)((SEPIC_POWER_ON_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_PGDLY     (uint16_t)((SEPIC_POWER_GOOD_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_REF_STEP  (uint16_t)((SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0))-1.0)
+#define SEPIC_REF_STEP  (uint16_t)((SEPIC_V_OUT_REF / (SEPIC_RPER + 1.0)))
 
 /*!SEPIC_POWER_CONTROLLER_t data structure sepic
  * *************************************************************************************************
