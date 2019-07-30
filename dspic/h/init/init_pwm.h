@@ -35,15 +35,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define LEB_PERIOD                  100         // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
-
-#define MAX_DUTY_CYCLE             1150         // This sets the maximum duty cycle
-
 #define PWM_PERIOD                 1429         // Measured in [tick = 2ns] -> 350 kHz 
-
-#define VOUT_ADC_TRIGGER_DELAY      120         // With respect to the start of the PWM cycle 
-#define SLOPE_START_DELAY           100         // With respect to the start of the PWM cycle; ToDo: How is this influenced by the settling and steady-state time of the DAC-slope generator?
-#define SLOPE_STOP_DELAY           1150         // With respect to the start of the PWM cycle
+#define MAX_DUTY_CYCLE             1150         // Sets the maximum duty cycle
+#define MIN_DUTY_CYCLE             100          // Sets the minimum duty cycle
 
 #define TDR                          25         // Rising edge dead time [2ns]
 #define TDF                          40         // Falling edge dead time [2ns]
