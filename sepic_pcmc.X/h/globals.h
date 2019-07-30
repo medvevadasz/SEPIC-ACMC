@@ -182,7 +182,7 @@ extern "C" {
 #define LEB_PERIOD                  200e-9  // Leading Edge Blanking period in [sec]
 #define SLOPE_START_DELAY           150e-9  // Delay in {sec] until the slope compensation ramp starts
 #define SLOPE_STOP_DELAY            0.85    // Delay in {sec] until the slope compensation ramp stops
-#define VOUT_ADC_TRIGGER_DELAY      (SWITCHING_PERIOD - 1000e-9) // ADC trigger delay in [sec] used to sample output voltage
+#define VOUT_ADC_TRIGGER_DELAY      ((0.80 * SWITCHING_PERIOD) - 1000e-9) // ADC trigger delay in [sec] used to sample output voltage
 #define PWM_MAIN_PHASE_SHIFT        50e-9   // Switching frequency phase shift in [sec]
 #define PWM_AUX_PHASE_SHIFT         150e-9  // Switching frequency phase shift in [sec]
     
