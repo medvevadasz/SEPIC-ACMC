@@ -19,8 +19,8 @@ volatile uint16_t init_sepic_pwr_control(void) {
     init_sepic_trig_pwm();   // Set up auxiliary PWM for sepic converter
     init_sepic_pwm();        // Set up sepic converter PWM
     init_sepic_acmp();       // Set up sepic converter peak current comparator/DAC
-    init_sepic_adc();        // Set up sepic converter ADC (voltage feedback only)
-    init_pot_adc();          // Set up ADC for sampling reference provided by external voltage divider        
+    init_vout_adc();        // Set up sepic converter ADC (voltage feedback only)
+    init_vref_adc();          // Set up ADC for sampling reference provided by external voltage divider        
     
     sepic.soft_start.counter = 0;                           // Reset Soft-Start Counter
     sepic.soft_start.pwr_on_delay = SEPIC_PODLY;            // Soft-Start Power-On Delay = 500 ms

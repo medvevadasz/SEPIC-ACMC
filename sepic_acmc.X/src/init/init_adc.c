@@ -146,7 +146,7 @@ volatile uint16_t init_vin_adc(void) {
     return(1);
 }
 
-volatile uint16_t init_sepic_adc(void) {
+volatile uint16_t init_vout_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
     ANSELCbits.ANSELC7 = 1; // Analog input is enabled and digital input is disabled for RC7 (Sepic converter output voltage feedback)
@@ -196,7 +196,7 @@ volatile uint16_t init_sepic_adc(void) {
     return(1);
 }
 
-volatile uint16_t init_pot_adc(void) {
+volatile uint16_t init_vref_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
     ANSELBbits.ANSELB1 = 1; // Analog input is enabled and digital input is disabled for RB1 (Potentiometer input)

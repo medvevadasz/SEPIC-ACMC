@@ -19,7 +19,7 @@ volatile uint16_t avg_cnt = 0;  // local buffer variable for the averaging filte
 volatile uint16_t ext_reference_init(void) {
 
     sepic.data.v_ref = 0;   // Reset SEPIC reference
-    init_pot_adc();         // Initialize 
+    init_vref_adc();         // Initialize 
  
     return(1);
 }
