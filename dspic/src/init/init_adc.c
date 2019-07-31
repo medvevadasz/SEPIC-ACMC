@@ -196,6 +196,7 @@ volatile uint16_t init_vout_adc(void) {
     return(1);
 }
 
+/* This ADC is sampling the external reference voltage for the voltage loop */
 volatile uint16_t init_ref_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
@@ -251,6 +252,10 @@ volatile uint16_t init_ref_adc(void) {
     return(1);
 }
 
+/* This ADC is sampling the average value of the input current every PWM cycle.
+ * Trigger for sampling occurs at 50% of the ON-time.
+ * Dedicated Core 0 is used here for AN0. 
+ */
 volatile uint16_t init_iin_adc(void) {
 
     // ANSELx: ANALOG SELECT FOR PORTx REGISTER
