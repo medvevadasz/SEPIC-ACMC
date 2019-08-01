@@ -1,8 +1,8 @@
 [GUI]
 CreateDate=7/31/2019 6:04:02 PM
-SaveDate=7/31/2019 6:04:02 PM
+SaveDate=7/31/2019 6:15:45 PM
 Name=z-Domain Control Loop Designer
-Version=0.9.0.49
+Version=0.9.0.60
 WindoWState=Maximized
 Top=-8
 Left=-8
@@ -30,6 +30,7 @@ FrequencyZ5=50000
 InputDataResolution=12
 FixedPointErrorMsg=0.5
 FixedPointErrorWarning=0.1
+BiDirectionalFeedback=0
 [AssemblyGenerator]
 UserPrefix1=c2p2z
 UserPrefix2=_current
@@ -51,6 +52,7 @@ AddShadowCopyControlOutput=0
 AntiWindup=1
 AddAntiWindupMaximumClamping=1
 AddAntiWindupMinimumClamping=1
+AntiWindupSoftDesaturation=0
 [CodeGenerationPaths]
 ExportASMSource=1
 ExportCSource=1
@@ -61,6 +63,8 @@ ASMSourcePath=.\src\
 CSourcePath=.\src\
 CHeaderPath=.\h\
 CLibPath=.\h\
+IncludeCHeaderPathInCSource=1
+IncludeCLibPathInCHeader=1
 [TimingGraph]
 ControlLoopOptimization=0
 CPUClock=100
