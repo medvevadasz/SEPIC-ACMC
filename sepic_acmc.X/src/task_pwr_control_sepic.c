@@ -16,11 +16,13 @@ volatile SEPIC_POWER_CONTROLLER_t sepic;
 
 volatile uint16_t init_sepic_pwr_control(void) {
     
-    init_sepic_trig_pwm();   // Set up auxiliary PWM for sepic converter
-    init_sepic_pwm();        // Set up sepic converter PWM
-    init_sepic_acmp();       // Set up sepic converter peak current comparator/DAC
+//    init_sepic_trig_pwm();   // Set up auxiliary PWM for sepic converter
+    init_sepic_pwm();       // Set up sepic converter PWM
+    init_sepic_acmp();      // Set up sepic converter peak current comparator/DAC
+    init_iin_adc();         // Set up ADC for input current feedback
     init_vout_adc();        // Set up sepic converter ADC (voltage feedback only)
-    init_vref_adc();          // Set up ADC for sampling reference provided by external voltage divider        
+    init_vref_adc();        // Set up ADC for sampling reference provided by external voltage divider 
+    init_vin_adc();         // Initialize ADC Channel to measure input voltage
     
     sepic.soft_start.counter = 0;                           // Reset Soft-Start Counter
     sepic.soft_start.pwr_on_delay = SEPIC_PODLY;            // Soft-Start Power-On Delay = 500 ms
@@ -33,17 +35,31 @@ volatile uint16_t init_sepic_pwr_control(void) {
         sepic.soft_start.ramp_ref_increment = 1;            // ZERO settings
     }
     
-    c2p2z_sepic_Init();
+    c2p2z_current_Init();
     
-    c2p2z_sepic.ADCTriggerOffset = VOUT_ADCTRIG;
-    c2p2z_sepic.ptrADCTriggerRegister = &SEPIC_VOUT_ADCTRIG;
-    c2p2z_sepic.InputOffset = SEPIC_VOUT_FEEDBACK_OFFSET;
-    c2p2z_sepic.ptrControlReference = &sepic.data.v_ref;
-    c2p2z_sepic.ptrSource = &SEPIC_VOUT_ADCBUF;
-    c2p2z_sepic.ptrTarget = &SEPIC_DAC_VREF_REGISTER;
-    c2p2z_sepic.MaxOutput = DAC_MAX;
-    c2p2z_sepic.MinOutput = DAC_MIN;
-    c2p2z_sepic.status.flag.enable = false;
+    c2p2z_current.ADCTriggerOffset = IIN_ADCTRIG_INIT;      // ToDo: Propagation delay to be added here
+    c2p2z_current.ptrADCTriggerRegister = &SEPIC_IIN_ADCTRIG;
+    c2p2z_current.InputOffset = SEPIC_IIN_FEEDBACK_OFFSET;
+    c2p2z_current.ptrControlReference = &sepic.data.i_ref;
+    c2p2z_current.ptrSource = &SEPIC_IIN_ADCBUF;
+    c2p2z_current.ptrTarget = &SEPIC_DUTY_CYCLE;
+    c2p2z_current.MaxOutput = MAX_DUTY_CYCLE;
+    c2p2z_current.MinOutput = MIN_DUTY_CYCLE;
+    c2p2z_current.status.flag.enable = false;
+    
+    sepic.data.i_ref = 0; // Reset inner current loop reference value 
+    
+    c2p2z_voltage_Init();
+    
+    c2p2z_voltage.ADCTriggerOffset = 0;
+    c2p2z_voltage.ptrADCTriggerRegister = &SEPIC_VOUT_ADCTRIG;
+    c2p2z_voltage.InputOffset = SEPIC_VOUT_FEEDBACK_OFFSET;
+    c2p2z_voltage.ptrControlReference = &sepic.data.v_ref;
+    c2p2z_voltage.ptrSource = &SEPIC_VOUT_ADCBUF;
+    c2p2z_voltage.ptrTarget = &sepic.data.i_ref;
+    c2p2z_voltage.MaxOutput = SEPIC_MAX_IIN;
+    c2p2z_voltage.MinOutput = SEPIC_MIN_IIN;
+    c2p2z_voltage.status.flag.enable = false;
     
     sepic.data.v_ref = 0; // Reset SEPIC reference value (will be set via external potentiometer)
     
@@ -54,10 +70,11 @@ volatile uint16_t launch_sepic_pwr_control(void) {
 
     // Run enable-sequence of all peripherals used by this power controller
     launch_adc();               // Start ADC Module
-    launch_sepic_acmp();        // Start analog comparator/DAC module
+//    launch_sepic_acmp();        // Start analog comparator/DAC module
     launch_sepic_pwm();         // Start PWM
     
-    c2p2z_sepic_Reset(&c2p2z_sepic);    // Reset control loop histories
+    c2p2z_current_Reset(&c2p2z_current);    // Reset current control loop histories
+    c2p2z_voltage_Reset(&c2p2z_voltage);    // Reset voltage control loop histories
     
     return(1);
 }
@@ -113,7 +130,8 @@ volatile uint16_t exec_sepic_pwr_control(void) {
             
             // Force PWM output and controller to OFF state
             PG1IOCONLbits.OVRENH = 1;           // Disable PWMxH output
-            c2p2z_sepic.status.flag.enable = false; // Disable the control loop
+            c2p2z_current.status.flag.enable = false; // Disable the current control loop
+            c2p2z_voltage.status.flag.enable = false; // Disable the voltage control loop
             sepic.status.flags.pwm_active = false;   // Clear PWM_ACTIVE flag bit
 
             // wait for fault to be cleared, adc to run and the GO bit to be set
@@ -138,8 +156,10 @@ DBGPIN_2_SET;
             if(sepic.soft_start.counter++ > sepic.soft_start.pwr_on_delay)
             {
                 sepic.soft_start.reference = 0;  // Reset soft-start reference to minimum
-                c2p2z_sepic_Reset(&c2p2z_sepic); // Reset control loop histories
-                c2p2z_sepic.ptrControlReference = &sepic.soft_start.reference; // Hijack controller reference
+                c2p2z_current_Reset(&c2p2z_current); // Reset current control loop histories
+                c2p2z_voltage_Reset(&c2p2z_voltage); // Reset voltage control loop histories
+//                c2p2z_sepic.ptrControlReference = &sepic.soft_start.reference; // Hijack controller reference
+                c2p2z_voltage.ptrControlReference = &sepic.soft_start.reference; // Hijack voltage controller reference
 
                 sepic.soft_start.counter = 0;                   // Reset soft-start counter
                 sepic.soft_start.phase   = SEPIC_SS_RAMP_UP;    // Switch to ramp-up mode
@@ -157,7 +177,8 @@ DBGPIN_2_CLEAR;
 
             // Force PWM output and controller to be active 
             PG1IOCONLbits.OVRENH = 0;           // User override disabled for PWMxH Pin =< PWM signal output starts
-            c2p2z_sepic.status.flag.enable = true; // Start the control loop 
+            c2p2z_voltage.status.flag.enable = true; // Start the voltage control loop 
+            c2p2z_current.status.flag.enable = true; // Start the current control loop 
 
             sepic.soft_start.reference += sepic.soft_start.ramp_ref_increment;  // increment reference
             
@@ -191,7 +212,7 @@ DBGPIN_2_SET;
         case SEPIC_SS_COMPLETE: // Soft start is complete, system is running, output voltage reference is taken from external potentiometer
 DBGPIN_2_CLEAR;
             sepic.status.flags.op_status = SEPIC_STAT_ON; // Set SEPIC status to ON mode
-            c2p2z_sepic.ptrControlReference = &sepic.data.v_ref; // hand reference control back
+            c2p2z_voltage.ptrControlReference = &sepic.data.v_ref; // hand reference control back
             break;
 
         /*!SEPIC_SS_FAULT or undefined state
@@ -205,7 +226,8 @@ DBGPIN_2_CLEAR;
             sepic.status.flags.fault_active = true;         // Set FAULT flag bit
 
             PG1IOCONLbits.OVRENH = 1;                       // Disable PWMxH output
-            c2p2z_sepic.status.flag.enable = false;         // Disable the control loop
+            c2p2z_current.status.flag.enable = false;       // Disable the current control loop
+            c2p2z_voltage.status.flag.enable = false;       // Disable the voltage control loop
             sepic.status.flags.enabled = false;             // Disable power controller
 
             sepic.status.flags.adc_active = false;          // Clear ADC_READY flag bit
@@ -246,10 +268,26 @@ void __attribute__((__interrupt__, auto_psv, context))_SEPIC_VOUT_ADCInterrupt(v
     sepic.data.v_out = SEPIC_VOUT_ADCBUF;
     sepic.data.v_in = SEPIC_VIN_ADCBUF;
 
-    c2p2z_sepic_Update(&c2p2z_sepic);
+    c2p2z_voltage_Update(&c2p2z_voltage);
 
     _ADCAN16IF = 0;  // Clear the ADCANx interrupt flag 
     DBGPIN_1_CLEAR;
+    
+}
+
+void __attribute__((__interrupt__, auto_psv, context))_SEPIC_IIN_ADCInterrupt(void)
+{
+    DBGPIN_3_SET;
+    
+    sepic.status.flags.adc_active = true;
+    sepic.data.i_in = SEPIC_IIN_ADCBUF;
+    
+    c2p2z_current_Update(&c2p2z_current);
+    
+    SEPIC_VOUT_ADCTRIG  = (c2p2z_current.ADCTriggerOffset + (PWM_PERIOD >> 1));;    // Output voltage should be sampled at 50% OFF time;
+    
+    _ADCAN0IF = 0;  // Clear the ADCANx interrupt flag 
+    DBGPIN_3_CLEAR;
     
 }
 

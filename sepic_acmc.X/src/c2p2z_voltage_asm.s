@@ -2,7 +2,7 @@
 ; **********************************************************************************
 ;  SDK Version: z-Domain Control Loop Designer v0.9.0.60
 ;  Author:      M91281
-;  Date/Time:   7/31/2019 6:06:02 PM
+;  Date/Time:   8/2/2019 5:08:29 PM
 ; **********************************************************************************
 ;  2P2Z Control Library File (Fast Floating Point Coefficient Scaling Mode)
 ; **********************************************************************************
@@ -163,14 +163,6 @@ _c2p2z_voltage_Update:    ; provide global scope to routine
 ; Write control output value to target
 	mov [w0 + #offTargetRegister], w8    ; move pointer to target in to working register
 	mov w4, [w8]    ; move control output into target address
-	
-;------------------------------------------------------------------------------
-; Update ADC trigger position
-	asr w4, #1, w6
-	mov [w0 + #offADCTriggerOffset], w8
-	add w6, w8, w6
-	mov [w0 + #offADCTriggerRegister], w8
-	mov w6, [w8]
 	
 ;------------------------------------------------------------------------------
 ; Load pointer to first element of control history array

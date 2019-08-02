@@ -84,10 +84,10 @@ inline volatile uint16_t fault_check_test(void) {
     }
 
     // Check if output voltage is in regulation
-    if(c2p2z_sepic.status.flag.enable) {
+    if(c2p2z_voltage.status.flag.enable && c2p2z_current.status.flag.enable) {
 
         // Determine deviation between controller reference and output voltage
-        sign_buf = abs((int16_t)*reg.obj - (int16_t)*c2p2z_sepic.ptrControlReference);
+        sign_buf = abs((int16_t)*reg.obj - (int16_t)*c2p2z_voltage.ptrControlReference);
 
         // Check deviation for defined limits
         if(sign_buf > reg.trip_level) {

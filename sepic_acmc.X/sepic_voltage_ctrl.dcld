@@ -1,6 +1,6 @@
 [GUI]
 CreateDate=7/31/2019 6:00:31 PM
-SaveDate=7/31/2019 6:06:19 PM
+SaveDate=8/2/2019 5:08:48 PM
 Name=z-Domain Control Loop Designer
 Version=0.9.0.60
 WindoWState=Maximized
@@ -45,7 +45,7 @@ ContextSavingCoreStatusRegister=1
 EnforceCoreConfiguration=1
 AddEnableDisableFeature=1
 AddErrorNormalization=1
-AddADCTriggerPlacement=1
+AddADCTriggerPlacement=0
 AddShadowCopyControlInput=0
 AddShadowCopyErrorInput=0
 AddShadowCopyControlOutput=0

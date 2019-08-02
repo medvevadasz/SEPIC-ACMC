@@ -179,22 +179,27 @@ extern "C" {
 #define PWM_PERIOD                  (uint16_t)(SWITCHING_PERIOD / PWM_RES)      // Measured in [tick = 2ns]
 //------ 
 
-#define MAXIMUM_DUTY_RATIO          0.80    // Maximum Duty Ratio in [%]
-#define LEB_PERIOD                  200e-9  // Leading Edge Blanking period in [sec]
-#define SLOPE_START_DELAY           150e-9  // Delay in {sec] until the slope compensation ramp starts
-#define SLOPE_STOP_DELAY            0.85    // Delay in {sec] until the slope compensation ramp stops
+#define SEPIC_DUTY_CYCLE            PG1DC
+#define MINIMUM_PULSE_DURATION      200e-9    // Minimum Pulse Duration in [sec]
+#define MAXIMUM_DUTY_RATIO          0.80      // Maximum Duty Ratio in [%]
+//#define LEB_PERIOD                  200e-9  // Leading Edge Blanking period in [sec]
+//#define SLOPE_START_DELAY           150e-9  // Delay in {sec] until the slope compensation ramp starts
+//#define SLOPE_STOP_DELAY            0.85    // Delay in {sec] until the slope compensation ramp stops
 #define VOUT_ADC_TRIGGER_DELAY      ((0.80 * SWITCHING_PERIOD) - 1000e-9) // ADC trigger delay in [sec] used to sample output voltage
 #define PWM_MAIN_PHASE_SHIFT        50e-9   // Switching frequency phase shift in [sec]
 #define PWM_AUX_PHASE_SHIFT         150e-9  // Switching frequency phase shift in [sec]
     
 //------ macros
+#define MIN_DUTY_CYCLE              (uint16_t)(MINIMUM_PULSE_DURATION / PWM_RES)    // This sets the minimum duty cycle
 #define MAX_DUTY_CYCLE              (uint16_t)(PWM_PERIOD * MAXIMUM_DUTY_RATIO)     // This sets the maximum duty cycle
-#define PWM_LEB_PERIOD              (uint16_t)(LEB_PERIOD / PWM_RES)  // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
+//#define PWM_LEB_PERIOD              (uint16_t)(LEB_PERIOD / PWM_RES)  // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
 #define PWM_PHASE_SHIFT             (uint16_t)(PWM_MAIN_PHASE_SHIFT / PWM_RES)   // Leading Edge Blanking = n x PWM resolution (here: 50 x 2ns = 100ns)
     
+#define IIN_ADCTRIG_INIT            (MIN_DUTY_CYCLE >> 1)  // Initial ADC trigger delay in [ticks] used to sample input current
+#define VOUT_ADCTRIG_INIT           (IIN_ADCTRIG_INIT) + (PWM_PERIOD >> 1)  // Initial ADC trigger delay in [ticks] used to sample output voltage
 #define VOUT_ADCTRIG                (uint16_t)(VOUT_ADC_TRIGGER_DELAY / PWM_RES)    // ADC trigger delay in [ticks] used to sample output voltage
-#define SLP_TRIG_START              (uint16_t)(SLOPE_START_DELAY / PWM_RES)         // Delay in {sec] until the slope compensation ramp starts
-#define SLP_TRIG_STOP               (uint16_t)(PWM_PERIOD * SLOPE_STOP_DELAY) // Delay in {sec] until the slope compensation ramp stops
+//#define SLP_TRIG_START              (uint16_t)(SLOPE_START_DELAY / PWM_RES)         // Delay in {sec] until the slope compensation ramp starts
+//#define SLP_TRIG_STOP               (uint16_t)(PWM_PERIOD * SLOPE_STOP_DELAY) // Delay in {sec] until the slope compensation ramp stops
 
 #define PWM_DEAD_TIME_RISING        0   // Rising edge dead time [2ns]
 #define PWM_DEAD_TIME_FALLING       0   // Falling edge dead time [2ns]
@@ -241,8 +246,31 @@ extern "C" {
 #define SEPIC_VIN_UVLO          (uint16_t)(SEPIC_VIN_MINIMUM * SEPIC_VIN_FB_GAIN / ADC_GRAN)
 #define SEPIC_VIN_OVLO          (uint16_t)(SEPIC_VIN_MAXIMUM * SEPIC_VIN_FB_GAIN / ADC_GRAN)
 #define SEPIC_VIN_HYST          (uint16_t)(SEPIC_VIN_HYSTERESIS * SEPIC_VIN_FB_GAIN / ADC_GRAN)
-
     
+//~~~~~~~~~~~~~~~~~
+//#define SEPIC_IIN_SOFT_START_REFERENCE  0.8  //  [A] 
+    
+#define SEPIC_IIN_MINIMUM       0.0     // Minimum input current in [A]
+#define SEPIC_IIN_MAXIMUM       1.0     // Maximum input current in [A]    
+ 
+#define SEPIC_MIN_IIN           (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
+#define SEPIC_MAX_IIN           (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )    
+    
+#define SEPIC_IIN_RS            0.05    // [Ohm]
+#define SEPIC_IIN_R1            1.0     // [kOhm]
+#define SEPIC_IIN_R2            4.7     // [kOhm]
+#define SEPIC_IIN_R3            18.0    // [kOhm]
+    
+#define IINRS                   SEPIC_IIN_RS 
+#define IINR1                   SEPIC_IIN_R1
+#define IINR2                   SEPIC_IIN_R2
+#define IINR3                   SEPIC_IIN_R3
+
+#define SEPIC_IIN_FB_GAIN           (float)((IINRS * IINR3/IINR1 * (IINR1 + IINR2)/(IINR1 + IINR3) ))
+#define SEPIC_IIN_FB_OFFSET         (float)( ADC_REF * (IINR1 + IINR2)/(IINR1 + IINR3) )
+#define SEPIC_IIN_FEEDBACK_OFFSET   (uint16_t)((SEPIC_IIN_FB_OFFSET / ADC_REF) * ADC_GRAN)
+    
+  
 /*!Startup Behavior
  * *************************************************************************************************
  * Summary:
@@ -296,9 +324,9 @@ extern "C" {
  * Global SEPIC Signal Mapping
  * 
  * Description:
- * The SEPIC needs one PWM output, one ADC input to sample output voltage and one analog
- * feedback signal for the peak current feedback signal. In addition, the following internal 
- * peripheral instances need to be defined:
+ * The SEPIC needs one PWM output, two ADC inputs to sample output voltage and input current, 
+ * one analog feedback signal for the peak current feedback signal. In addition, the following 
+ * internal peripheral instances need to be defined:
  * 
  *     - Main PWM Generator Instance
  *     - Auxiliary PWM Generator Instance
@@ -309,12 +337,22 @@ extern "C" {
  *  
  * *************************************************************************************************/
 
-#define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt   
-#define SEPIC_VIN_ADCBUF                ADCBUF12
+#define _SEPIC_IIN_ADCInterrupt         _ADCAN0Interrupt 
+#define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt  
+#define _SEPIC_VIN_ADCInterrupt         _ADCAN12Interrupt
+#define _SEPIC_VREF_ADCInterrupt        _ADCAN6Interrupt
+    
+#define SEPIC_IIN_ADCBUF                ADCBUF0
 #define SEPIC_VOUT_ADCBUF               ADCBUF16
-#define SEPIC_VOUT_ADCTRIG              PG2TRIGA
+#define SEPIC_VIN_ADCBUF                ADCBUF12
+#define SEPIC_VREF_ADCBUF               ADCBUF6
+
+#define SEPIC_IIN_ADCTRIG               PG1TRIGA    
+#define SEPIC_VOUT_ADCTRIG              PG1TRIGB
+
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0
 #define SEPIC_DAC_VREF_REGISTER         DAC1DATH
+    
 
 /*!External Reference Voltage Input
  * *************************************************************************************************

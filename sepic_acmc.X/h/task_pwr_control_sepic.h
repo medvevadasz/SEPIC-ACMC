@@ -36,7 +36,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "c2p2z_sepic.h"
+//#include "c2p2z_sepic.h"
+#include "c2p2z_current.h"
+#include "c2p2z_voltage.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -99,9 +101,11 @@ typedef struct {
 // ==============================================================================================
 
 typedef struct {
+    volatile uint16_t i_in;     // SEPIC input current
     volatile uint16_t i_out;    // SEPIC output current
     volatile uint16_t v_in;     // SEPIC input voltage
     volatile uint16_t v_out;    // SEPIC output voltage
+    volatile uint16_t i_ref;    // SEPIC reference current
     volatile uint16_t v_ref;    // SEPIC reference voltage
 }SEPIC_CONVERTER_DATA_t;        // SEPIC runtime data
 

@@ -335,6 +335,11 @@ volatile uint16_t launch_adc(void) {
     IFS6bits.ADCAN16IF = 0;    // Reset Interrupt Flag Bit
     IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
     
+     // INITIALIZE AN0 INTERRUPTS (SEPIC Input Current)
+    _ADCAN0IP = 5;
+    _ADCAN0IF = 0;
+    _ADCAN0IE = 1;
+    
     
     return(1);
 }
