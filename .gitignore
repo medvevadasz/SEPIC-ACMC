@@ -7,10 +7,10 @@
 
 ### Project-specific excludes ###
 docs/
-sepic_pcmc.X/build/
-sepic_pcmc.X/debug/
-sepic_pcmc.X/nbproject/private/
-sepic_pcmc.X/nbproject/Makefile-*
+sepic_acmc.X/build/
+sepic_acmc.X/debug/
+sepic_acmc.X/nbproject/private/
+sepic_acmc.X/nbproject/Makefile-*
 
 ### Misc ###
 ~*.*

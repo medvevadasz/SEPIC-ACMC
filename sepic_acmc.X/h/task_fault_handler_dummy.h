@@ -19,42 +19,61 @@
  * TERMS. 
  */
 
-
 /* 
- * File:   init_adc.h
- * Author: M91406
- * Comments: Initializes the ADC module
+ * File:   
+ * Author: 
+ * Comments:
  * Revision history: 
- * 1.0  initial version
  */
 
 // This is a guard condition so that contents of this file are not included
 // more than once.  
-#ifndef INITIALIZE_ADC_MODULE_H
-#define	INITIALIZE_ADC_MODULE_H
+#ifndef TASK_FAULT_HANDLER_DUMMY_H
+#define	TASK_FAULT_HANDLER_DUMMY_H
 
 #include <xc.h> // include processor files - each processor file is guarded.  
-#include <stdint.h>
-#include <stdbool.h>
+
+// TODO Insert appropriate #include <>
+
+// TODO Insert C++ class definitions if appropriate
+
+// TODO Insert declarations
+
+// Comment a function and leverage automatic documentation with slash star star
+/**
+    <p><b>Function prototype:</b></p>
+  
+    <p><b>Summary:</b></p>
+
+    <p><b>Description:</b></p>
+
+    <p><b>Precondition:</b></p>
+
+    <p><b>Parameters:</b></p>
+
+    <p><b>Returns:</b></p>
+
+    <p><b>Example:</b></p>
+    <code>
+ 
+    </code>
+
+    <p><b>Remarks:</b></p>
+ */
+// TODO Insert declarations or function prototypes (right here) to leverage 
+// live documentation
 
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-extern volatile uint16_t init_adc_module(void);
-extern volatile uint16_t init_iout_adc(void);
-extern volatile uint16_t init_vin_adc(void);
-extern volatile uint16_t init_iin_adc(void);
-extern volatile uint16_t init_vout_adc(void);
-extern volatile uint16_t init_vref_adc(void);
-
-
-extern volatile uint16_t launch_adc(void);
-extern volatile uint16_t enable_adc_interrupts(void);
+extern volatile uint16_t fault_check_dummy_exec(void);
 
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* INITIALIZE_ADC_MODULE_H */
+
+
+#endif	/* XC_HEADER_TEMPLATE_H */
 

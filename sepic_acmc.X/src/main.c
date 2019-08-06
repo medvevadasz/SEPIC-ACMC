@@ -12,6 +12,8 @@
 
 #include "main.h"
 
+
+
 volatile uint16_t tgl_cnt = 0;  // local counter of LED toggle loops
 #define TGL_INTERVAL    2999    // LED toggle interval of (2999 + 1) x 100usec = 100ms
 #define TMR1_TIMEOUT    30000   // Timeout protection for Timer1 interrupt flag bit
@@ -69,7 +71,8 @@ int main(void) {
 //        DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
 
         exec_sepic_pwr_control();
-        fault_check_exec();
+//        fault_check_exec(); 
+        fault_check_dummy_exec();   // ToDo: Use it only to establish current loop compensator
         
         if(sepic.status.flags.op_status == SEPIC_STAT_ON) {
             DBGLED_GN_SET;

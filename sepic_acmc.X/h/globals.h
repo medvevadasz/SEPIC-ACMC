@@ -50,6 +50,8 @@
 #include "task_external_vref.h"
 #include "task_fault_handler.h"
 
+#include "task_fault_handler_dummy.h"
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -218,7 +220,8 @@ extern "C" {
  * *************************************************************************************************/
     
 #define SEPIC_VOUT_NOMINAL          15.0    // Nominal output voltage in [V]
-#define SEPIC_VOUT_MAXIMUM          24.0    // Maximum output voltage in [V]
+//#define SEPIC_VOUT_MAXIMUM          24.0    // Maximum output voltage in [V]
+#define SEPIC_VOUT_MAXIMUM          20.0    // Maximum output voltage in [V]
 #define SEPIC_VOUT_HYSTERESIS       1.0     // Output voltage protection hysteresis in [V]
 #define SEPIC_VOUT_UPPER_DEVIATION  0.8     // Upper output voltage deviation from reference in [V]
 #define SEPIC_VOUT_LOWER_DEVIATION  0.4     // Lower output voltage deviation from reference in [V]
@@ -248,14 +251,19 @@ extern "C" {
 #define SEPIC_VIN_HYST          (uint16_t)(SEPIC_VIN_HYSTERESIS * SEPIC_VIN_FB_GAIN / ADC_GRAN)
     
 //~~~~~~~~~~~~~~~~~
-//#define SEPIC_IIN_SOFT_START_REFERENCE  0.8  //  [A] 
+//Output Current
     
-#define SEPIC_IIN_MINIMUM       0.0     // Minimum input current in [A]
-#define SEPIC_IIN_MAXIMUM       1.0     // Maximum input current in [A]    
+#define SEPIC_IOUT_FB_GAIN      2.5      // [V/A]    
+    
+#define SEPIC_IOUT_MINIMUM       0.0     // Minimum output current in [A]
+#define SEPIC_IOUT_MAXIMUM       1.0     // Maximum output current in [A]    
  
-#define SEPIC_MIN_IIN           (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
-#define SEPIC_MAX_IIN           (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )    
+#define SEPIC_MIN_IOUT          (uint16_t)(SEPIC_IOUT_MINIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN )
+#define SEPIC_MAX_IOUT          (uint16_t)(SEPIC_IOUT_MAXIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN )    
     
+//~~~~~~~~~~~~~~~~~
+// Input Current
+
 #define SEPIC_IIN_RS            0.05    // [Ohm]
 #define SEPIC_IIN_R1            1.0     // [kOhm]
 #define SEPIC_IIN_R2            4.7     // [kOhm]
@@ -269,9 +277,14 @@ extern "C" {
 #define SEPIC_IIN_FB_GAIN           (float)((IINRS * IINR3/IINR1 * (IINR1 + IINR2)/(IINR1 + IINR3) ))
 #define SEPIC_IIN_FB_OFFSET         (float)( ADC_REF * (IINR1 + IINR2)/(IINR1 + IINR3) )
 #define SEPIC_IIN_FEEDBACK_OFFSET   (uint16_t)((SEPIC_IIN_FB_OFFSET / ADC_REF) * ADC_GRAN)
+
+#define SEPIC_IIN_MINIMUM   0   // [A]
+#define SEPIC_IIN_MAXIMUM   2.0 // [A]
     
-  
-/*!Startup Behavior
+#define SEPIC_MAX_IIN       (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
+#define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )    
+    
+ /*!Startup Behavior
  * *************************************************************************************************
  * Summary:
  * Global defines for soft-start specific parameters
@@ -289,13 +302,20 @@ extern "C" {
  * *************************************************************************************************/
 
 #define SEPIC_POWER_ON_DELAY    500e-3      // power on delay in [sec]
-#define SEPIC_RAMP_PERIOD       50e-3         // ramp period in [sec]
+//#define SEPIC_RAMP_PERIOD       50e-3         // ramp period in [sec]
+#define SEPIC_RAMP_PERIOD       20e-3         // ramp period in [sec]
 #define SEPIC_POWER_GOOD_DELAY  100e-3        // power good in [sec]
 
 #define SEPIC_PODLY     (uint16_t)((SEPIC_POWER_ON_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_PGDLY     (uint16_t)((SEPIC_POWER_GOOD_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_REF_STEP  (uint16_t)((SEPIC_VOUT_REF / (SEPIC_RPER + 1.0)))
+
+// Only for establishing current compensator characteristics     
+#define SEPIC_IIN_SOFT_START_REFERENCE  1.0  //  [A]
+
+#define IIN_SS_REF  (uint16_t)(SEPIC_IIN_SOFT_START_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
+#define IIN_SS_STEP (uint16_t)(IIN_SS_REF / (SEPIC_RPER + 1.0))    
 
 /*!FAULT Shut Down and Recover
  * *************************************************************************************************
@@ -338,19 +358,23 @@ extern "C" {
  * *************************************************************************************************/
 
 #define _SEPIC_IIN_ADCInterrupt         _ADCAN0Interrupt 
+#define _SEPIC_IOUT_ADCInterrupt        _ADCAN17Interrupt    
 #define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt  
 #define _SEPIC_VIN_ADCInterrupt         _ADCAN12Interrupt
 #define _SEPIC_VREF_ADCInterrupt        _ADCAN6Interrupt
     
 #define SEPIC_IIN_ADCBUF                ADCBUF0
+#define SEPIC_IOUT_ADCBUF               ADCBUF17    
 #define SEPIC_VOUT_ADCBUF               ADCBUF16
 #define SEPIC_VIN_ADCBUF                ADCBUF12
 #define SEPIC_VREF_ADCBUF               ADCBUF6
 
-#define SEPIC_IIN_ADCTRIG               PG1TRIGA    
+#define SEPIC_IIN_ADCTRIG               PG1TRIGA
+//#define SEPIC_IOUT_ADCTRIG              PG1TRIGA    
 #define SEPIC_VOUT_ADCTRIG              PG1TRIGB
 
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0
+#define SEPIC_IOUT_FEEDBACK_OFFSET      0
 #define SEPIC_DAC_VREF_REGISTER         DAC1DATH
     
 
