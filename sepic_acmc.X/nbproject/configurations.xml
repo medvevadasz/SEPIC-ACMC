@@ -67,6 +67,7 @@
       <itemPath>readme.txt</itemPath>
       <itemPath>sepic_current_ctrl.dcld</itemPath>
       <itemPath>sepic_voltage_ctrl.dcld</itemPath>
+      <itemPath>readme_iloop_tweak.txt</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
