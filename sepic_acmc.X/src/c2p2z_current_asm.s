@@ -2,7 +2,7 @@
 ; **********************************************************************************
 ;  SDK Version: z-Domain Control Loop Designer v0.9.0.60
 ;  Author:      M91281
-;  Date/Time:   8/2/2019 12:22:10 PM
+;  Date/Time:   8/7/2019 2:50:33 PM
 ; **********************************************************************************
 ;  2P2Z Control Library File (Fast Floating Point Coefficient Scaling Mode)
 ; **********************************************************************************
@@ -94,6 +94,8 @@ _c2p2z_current_Update:    ; provide global scope to routine
 ; Read data from input source and calculate error input to transfer function
 	mov [w0 + #offSourceRegister], w2    ; load pointer to input source register
 	mov [w2], w1    ; move value from input source into working register
+	mov [w0 + #offInputOffset], w2    ; load input offset value into working register
+	subr w2, w1, w1    ; subtract offset from recent input value
 	mov [w0 + #offControlReference], w2    ; move pointer to control reference into working register
 	subr w1, [w2], w1    ; calculate error (= reference - input)
 	mov [w0 + #offPreShift], w2    ; move error input scaler into working register

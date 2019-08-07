@@ -8,7 +8,7 @@
  * 	Sampling Frequency:	350000 Hz 
  * 	Fixed Point Format:	15
  * 	Scaling Mode:		4 - Fast Floating Point Coefficient Scaling
- * 	Input Gain:			0.285
+ * 	Input Gain:			0.27
  * 
  * ***************************************************************************************/
 

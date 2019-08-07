@@ -279,7 +279,7 @@ extern "C" {
 #define SEPIC_IIN_FEEDBACK_OFFSET   (uint16_t)((SEPIC_IIN_FB_OFFSET / ADC_REF) * ADC_GRAN)
 
 #define SEPIC_IIN_MINIMUM   0   // [A]
-#define SEPIC_IIN_MAXIMUM   2.0 // [A]
+#define SEPIC_IIN_MAXIMUM   0.25 // [A] Note: this is only effective when voltage loop is feeding current compensator
     
 #define SEPIC_MAX_IIN       (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
 #define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )    
@@ -312,7 +312,7 @@ extern "C" {
 #define SEPIC_REF_STEP  (uint16_t)((SEPIC_VOUT_REF / (SEPIC_RPER + 1.0)))
 
 // Only for establishing current compensator characteristics     
-#define SEPIC_IIN_SOFT_START_REFERENCE  1.0  //  [A]
+#define SEPIC_IIN_SOFT_START_REFERENCE  0.25  //  [A]
 
 #define IIN_SS_REF  (uint16_t)(SEPIC_IIN_SOFT_START_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
 #define IIN_SS_STEP (uint16_t)(IIN_SS_REF / (SEPIC_RPER + 1.0))    

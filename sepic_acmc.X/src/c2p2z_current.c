@@ -8,11 +8,11 @@
  * 	Sampling Frequency:	350000 Hz 
  * 	Fixed Point Format:	15
  * 	Scaling Mode:		4 - Fast Floating Point Coefficient Scaling
- * 	Input Gain:			0.285
+ * 	Input Gain:			0.27
  * 
  * ***************************************************************************************/
 
-#include "c2p2z_current.h"
+#include "..\h\c2p2z_current.h"
 
 /* ***************************************************************************************
  * Data Arrays:
@@ -34,9 +34,9 @@
  * 	Pole&Zero Placement:
  * ***************************************************************************************
  *
- * 	fP0:	8800 Hz 
+ * 	fP0:	40 Hz 
  * 	fP1:	17000 Hz 
- * 	fZ1:	1200 Hz 
+ * 	fZ1:	400 Hz 
  *
  * ***************************************************************************************
  * 	Filter Coefficients and Parameters:
@@ -50,9 +50,9 @@
 
 	volatile int32_t c2p2z_current_BCoefficients [3] = 
 	{
-		0x6E2FFFFE,	// Coefficient B0 will be multiplied with error input e(n)
-		0x4B260003,	// Coefficient B1 will be multiplied with error input e(n-1)
-		0x942BFFFE	// Coefficient B2 will be multiplied with error input e(n-2)
+		0x64C80004,	// Coefficient B0 will be multiplied with error input e(n)
+		0x5C4D000B,	// Coefficient B1 will be multiplied with error input e(n-1)
+		0x9BF10004	// Coefficient B2 will be multiplied with error input e(n-2)
 	};
 
 
