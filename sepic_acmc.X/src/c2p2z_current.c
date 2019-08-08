@@ -12,7 +12,7 @@
  * 
  * ***************************************************************************************/
 
-#include "..\h\c2p2z_current.h"
+#include "c2p2z_current.h"
 
 /* ***************************************************************************************
  * Data Arrays:
@@ -34,8 +34,8 @@
  * 	Pole&Zero Placement:
  * ***************************************************************************************
  *
- * 	fP0:	40 Hz 
- * 	fP1:	17000 Hz 
+ * 	fP0:	30 Hz 
+ * 	fP1:	10000 Hz 
  * 	fZ1:	400 Hz 
  *
  * ***************************************************************************************
@@ -44,15 +44,15 @@
 
 	volatile int32_t c2p2z_current_ACoefficients [2] = 
 	{
-		0x6F0EFFFF,	// Coefficient A1 will be multiplied with controller output u(n-1)
-		0xA1E50000	// Coefficient A2 will be multiplied with controller output u(n-2)
+		0x7576FFFF,	// Coefficient A1 will be multiplied with controller output u(n-1)
+		0x95160000	// Coefficient A2 will be multiplied with controller output u(n-2)
 	};
 
 	volatile int32_t c2p2z_current_BCoefficients [3] = 
 	{
-		0x64C80004,	// Coefficient B0 will be multiplied with error input e(n)
-		0x5C4D000B,	// Coefficient B1 will be multiplied with error input e(n-1)
-		0x9BF10004	// Coefficient B2 will be multiplied with error input e(n-2)
+		0x5E0E0005,	// Coefficient B0 will be multiplied with error input e(n)
+		0x5624000C,	// Coefficient B1 will be multiplied with error input e(n-1)
+		0xA2A00005	// Coefficient B2 will be multiplied with error input e(n-2)
 	};
 
 

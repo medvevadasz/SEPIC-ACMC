@@ -38,7 +38,8 @@
 
 //#include "c2p2z_sepic.h"
 #include "c2p2z_current.h"
-#include "c2p2z_voltage.h"
+#include "c2p2z_output_current.h"
+//#include "c2p2z_voltage.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -80,9 +81,10 @@ typedef enum {
     SEPIC_SS_LAUNCH_PER      = 1,  // Soft-Start Phase Peripheral Launch
     SEPIC_SS_STANDBY         = 2,  // Soft-Start Phase Standby (wait for GO command)
     SEPIC_SS_PWR_ON_DELAY    = 3,  // Soft-Start Phase Power On Delay
-    SEPIC_SS_RAMP_UP         = 4,  // Soft-Start Phase Output Ramp Up 
-    SEPIC_SS_PWR_GOOD_DELAY  = 5,  // Soft-Start Phase Power Good Delay
-    SEPIC_SS_COMPLETE        = 6   // Soft-Start Phase Complete
+    SEPIC_SS_CALIB           = 4,  // Soft-Start Phase Calibration     
+    SEPIC_SS_RAMP_UP         = 5,  // Soft-Start Phase Output Ramp Up 
+    SEPIC_SS_PWR_GOOD_DELAY  = 6,  // Soft-Start Phase Power Good Delay
+    SEPIC_SS_COMPLETE        = 7   // Soft-Start Phase Complete
 }SEPIC_SOFT_START_STATUS_e;
 
 typedef struct {
@@ -93,6 +95,9 @@ typedef struct {
     volatile uint16_t ramp_ref_increment;   // Soft-Start Single Reference Increment per Step
     volatile uint16_t pwr_good_delay;       // Soft-Start Power Good Delay
     volatile uint16_t counter;              // Soft-Start Execution Counter
+    volatile uint16_t avg_counter;          // Counter for measuring offset of sensor for input current
+    volatile uint16_t iin_acc;              // Accumulator for averaging to calculate input current offset
+    volatile uint16_t cal_counter;          // Counter for validating output current sensor is in operation
     volatile SEPIC_SOFT_START_STATUS_e phase; // Soft-Start Phase Index
 }SEPIC_SOFT_START_t;                        // SEPIC soft-start settings and variables
 
@@ -101,13 +106,15 @@ typedef struct {
 // ==============================================================================================
 
 typedef struct {
-    volatile uint16_t i_in;     // SEPIC input current
-    volatile uint16_t i_out;    // SEPIC output current
-    volatile uint16_t v_in;     // SEPIC input voltage
-    volatile uint16_t v_out;    // SEPIC output voltage
-    volatile uint16_t i_ref;    // SEPIC reference current
-    volatile uint16_t v_ref;    // SEPIC reference voltage
-}SEPIC_CONVERTER_DATA_t;        // SEPIC runtime data
+    volatile uint16_t i_in;         // SEPIC input current
+    volatile uint16_t i_out;        // SEPIC output current
+    volatile uint16_t v_in;         // SEPIC input voltage
+    volatile uint16_t v_out;        // SEPIC output voltage
+    volatile uint16_t i_in_ref;     // SEPIC reference for input current
+    volatile uint16_t i_out_ref     // SEPIC reference for output current
+    volatile uint16_t v_ref;        // SEPIC reference voltage
+    volatile uint16_t i_in_offs;    // Input current sensor offset
+}SEPIC_CONVERTER_DATA_t;            // SEPIC runtime data
 
 typedef struct {
     volatile SEPIC_CONVERTER_STATUS_t status; // SEPIC operation status bits

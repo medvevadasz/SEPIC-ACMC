@@ -278,11 +278,13 @@ extern "C" {
 #define SEPIC_IIN_FB_OFFSET         (float)( ADC_REF * (IINR1 + IINR2)/(IINR1 + IINR3) )
 #define SEPIC_IIN_FEEDBACK_OFFSET   (uint16_t)((SEPIC_IIN_FB_OFFSET / ADC_REF) * ADC_GRAN)
 
-#define SEPIC_IIN_MINIMUM   0   // [A]
-#define SEPIC_IIN_MAXIMUM   0.25 // [A] Note: this is only effective when voltage loop is feeding current compensator
+#define SEPIC_IIN_MINIMUM   0.05 // [A]
+#define SEPIC_IIN_MAXIMUM   0.5  // [A] Note: this is only effective when voltage loop is feeding current compensator
     
 #define SEPIC_MAX_IIN       (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
-#define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )    
+#define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN ) 
+    
+
     
  /*!Startup Behavior
  * *************************************************************************************************
@@ -312,10 +314,18 @@ extern "C" {
 #define SEPIC_REF_STEP  (uint16_t)((SEPIC_VOUT_REF / (SEPIC_RPER + 1.0)))
 
 // Only for establishing current compensator characteristics     
-#define SEPIC_IIN_SOFT_START_REFERENCE  0.25  //  [A]
+#define SEPIC_IIN_SOFT_START_REFERENCE  0.25  // [A]
 
-#define IIN_SS_REF  (uint16_t)(SEPIC_IIN_SOFT_START_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
-#define IIN_SS_STEP (uint16_t)(IIN_SS_REF / (SEPIC_RPER + 1.0))    
+#define SEPIC_IIN_MAXREF_INCREMENT      0.1   // [A]; Used in the Calibration Phase to step the maximum allowed setpoint
+    
+#define IIN_SS_REF              (uint16_t)(SEPIC_IIN_SOFT_START_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
+#define IIN_SS_STEP             (uint16_t)(IIN_SS_REF / (SEPIC_RPER + 1.0)) 
+#define SEPIC_IIN_MAXREF_INC    (uint16_t)(SEPIC_IIN_MAXREF_INCREMENT * SEPIC_IIN_FB_GAIN / ADC_GRAN )
+
+#define SEPIC_IOUT_SOFT_START_REFERENCE  0.36 // [A]; This is the value the ramp-up phase converges to
+    
+#define IOUT_SS_REF  (uint16_t)(SEPIC_IOUT_SOFT_START_REFERENCE *SEPIC_IOUT_FB_GAIN / ADC_GRAN)
+#define IOUT_SS_STEP (uint16_t)(IOUT_SS_REF / (SEPIC_RPER + 1.0)) 
 
 /*!FAULT Shut Down and Recover
  * *************************************************************************************************
@@ -362,6 +372,9 @@ extern "C" {
 #define _SEPIC_VOUT_ADCInterrupt        _ADCAN16Interrupt  
 #define _SEPIC_VIN_ADCInterrupt         _ADCAN12Interrupt
 #define _SEPIC_VREF_ADCInterrupt        _ADCAN6Interrupt
+
+#define _SEPIC_IIN_ADC_IF               _ADCAN0IF    
+#define _SEPIC_IOUT_ADC_IF              _ADCAN17IF
     
 #define SEPIC_IIN_ADCBUF                ADCBUF0
 #define SEPIC_IOUT_ADCBUF               ADCBUF17    
@@ -370,8 +383,8 @@ extern "C" {
 #define SEPIC_VREF_ADCBUF               ADCBUF6
 
 #define SEPIC_IIN_ADCTRIG               PG1TRIGA
-//#define SEPIC_IOUT_ADCTRIG              PG1TRIGA    
-#define SEPIC_VOUT_ADCTRIG              PG1TRIGB
+#define SEPIC_IOUT_ADCTRIG              PG1TRIGA    
+//#define SEPIC_VOUT_ADCTRIG              PG1TRIGA
 
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0
 #define SEPIC_IOUT_FEEDBACK_OFFSET      0

@@ -49,6 +49,8 @@
         <itemPath>src/c2p2z_current_asm.s</itemPath>
         <itemPath>src/c2p2z_voltage.c</itemPath>
         <itemPath>src/c2p2z_voltage_asm.s</itemPath>
+        <itemPath>src/c2p2z_output_current.c</itemPath>
+        <itemPath>src/c2p2z_output_current_asm.s</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="init" projectFiles="true">
         <itemPath>src/init/init_fosc.c</itemPath>
@@ -68,6 +70,7 @@
       <itemPath>sepic_current_ctrl.dcld</itemPath>
       <itemPath>sepic_voltage_ctrl.dcld</itemPath>
       <itemPath>readme_iloop_tweak.txt</itemPath>
+      <itemPath>sepic_output_current_ctrl.dcld</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

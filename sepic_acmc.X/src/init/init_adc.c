@@ -115,7 +115,7 @@ volatile uint16_t init_vin_adc(void) {
     ADIELbits.IE12 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG3Lbits.TRGSRC12 = 0b00110; // Trigger Source Selection for Corresponding Analog Inputs: PWM2 Trigger 1
+    ADTRIG3Lbits.TRGSRC12 = 0b00111; // Trigger Source Selection for Corresponding Analog Inputs: PWM2 Trigger 2
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP0CONbits.CHNL = 12; // Input Channel Number: 12=AN12
@@ -165,7 +165,7 @@ volatile uint16_t init_vout_adc(void) {
     ADIEHbits.IE16 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG4Lbits.TRGSRC16 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2
+    ADTRIG4Lbits.TRGSRC16 = 0b00101 // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP1CONbits.CHNL = 16; // Input Channel Number: 16=AN16
@@ -228,13 +228,13 @@ volatile uint16_t init_iout_adc(void) {
     ADCMP1CONbits.LOLO = 0; // Low/Low Comparator Event: Disabled
    
     // ADCMPxENL: ADC DIGITAL COMPARATOR x CHANNEL ENABLE REGISTER LOW
-    ADCMP1ENHbits.CMPEN17 = 0; // Comparator Enable for Corresponding Input Channels: AN16 Disabled
+    ADCMP1ENHbits.CMPEN17 = 0; // Comparator Enable for Corresponding Input Channels: AN17 Disabled
     
     // ADCMPxLO: ADC COMPARARE REGISTER LOWER THRESHOLD VALUE REGISTER
-    ADCMP1LO = 0; // G=0.148; 0Vout=0 ADC ticks
+    ADCMP1LO = 0; // G=2.5; 0A Iout=0 ADC ticks
 
     // ADCMPxHI: ADC COMPARARE REGISTER UPPER THRESHOLD VALUE REGISTER
-    ADCMP1HI = 3673; // G=0.148; 20Vout=3673 ADC ticks
+    ADCMP1HI = 3723; // G=2.5; 1.2A Vout=3673 ADC ticks
     
     // ADFLxCON: ADC DIGITAL FILTER x CONTROL REGISTER
     ADFL1CONbits.FLEN = 0; // Filter Enable: Filter is disabled
@@ -388,22 +388,22 @@ volatile uint16_t enable_adc_interrupts(void) {
      // INITIALIZE AN16 INTERRUPTS (SEPIC Output Voltage)
     IPC26bits.ADCAN16IP = 5;   // Interrupt Priority Level 5
     IFS6bits.ADCAN16IF = 0;    // Reset Interrupt Flag Bit
-    IEC6bits.ADCAN16IE = 1;    // Enable ADCAN16 Interrupt 
+    IEC6bits.ADCAN16IE = 0;    // Disable ADCAN16 Interrupt 
     
      // INITIALIZE AN17 INTERRUPTS (SEPIC Output Current)
-    _ADCAN17IP = 5;
-    _ADCAN17IF = 0;
-    _ADCAN17IE = 0;
+    _ADCAN17IP = 5;     // Interrupt Priority Level 5
+    _ADCAN17IF = 0;     // Reset Interrupt Flag Bit
+    _ADCAN17IE = 0;     // Enable ADCAN17 Interrupt
     
      // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
-    _ADCAN6IP = 2;   // Interrupt Priority Level 5
-    _ADCAN6IF = 0;    // Reset Interrupt Flag Bit
-    _ADCAN6IE = 1;    // Enable ADCAN6 Interrupt
+    _ADCAN6IP = 2;      // Interrupt Priority Level 2
+    _ADCAN6IF = 0;      // Reset Interrupt Flag Bit
+    _ADCAN6IE = 0;      // Disable ADCAN6 Interrupt
     
     // INITIALIZE AN0 INTERRUPTS (SEPIC Input Current)
-    _ADCAN0IP = 5;
-    _ADCAN0IF = 0;
-    _ADCAN0IE = 1;
+    _ADCAN0IP = 5;      // Interrupt Priority Level 5
+    _ADCAN0IF = 0;      // Reset Interrupt Flag Bit
+    _ADCAN0IE = 1;      // Enable ADCAN0 Interrupt 
     
     return(1);
     

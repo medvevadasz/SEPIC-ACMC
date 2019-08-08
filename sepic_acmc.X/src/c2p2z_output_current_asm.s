@@ -2,7 +2,7 @@
 ; **********************************************************************************
 ;  SDK Version: z-Domain Control Loop Designer v0.9.0.60
 ;  Author:      M91281
-;  Date/Time:   8/8/2019 10:34:15 AM
+;  Date/Time:   8/8/2019 10:22:52 AM
 ; **********************************************************************************
 ;  2P2Z Control Library File (Fast Floating Point Coefficient Scaling Mode)
 ; **********************************************************************************
@@ -55,15 +55,15 @@
 ; This function calls the z-domain controller processing the latest data point input
 ;------------------------------------------------------------------------------
 	
-	.global _c2p2z_current_Update
-_c2p2z_current_Update:    ; provide global scope to routine
+	.global _c2p2z_output_current_Update
+_c2p2z_output_current_Update:    ; provide global scope to routine
 	push w12    ; save working register used for status flag tracking
 	
 ;------------------------------------------------------------------------------
 ; Check status word for Enable/Disable flag and bypass computation, if disabled
 	mov [w0 + #offStatus], w12
 	btss w12, #NPMZ16_STATUS_ENABLE
-	bra C2P2Z_CURRENT_BYPASS_LOOP
+	bra C2P2Z_OUTPUT_CURRENT_BYPASS_LOOP
 	
 ;------------------------------------------------------------------------------
 ; Configure DSP for fractional operation with normal saturation (Q1.31 format)
@@ -94,8 +94,6 @@ _c2p2z_current_Update:    ; provide global scope to routine
 ; Read data from input source and calculate error input to transfer function
 	mov [w0 + #offSourceRegister], w2    ; load pointer to input source register
 	mov [w2], w1    ; move value from input source into working register
-	mov [w0 + #offInputOffset], w2    ; load input offset value into working register
-	subr w2, w1, w1    ; subtract offset from recent input value
 	mov [w0 + #offControlReference], w2    ; move pointer to control reference into working register
 	subr w1, [w2], w1    ; calculate error (= reference - input)
 	mov [w0 + #offPreShift], w2    ; move error input scaler into working register
@@ -142,24 +140,24 @@ _c2p2z_current_Update:    ; provide global scope to routine
 ; Check for upper limit violation
 	mov [w0 + #offMaxOutput], w6    ; load upper limit value
 	cpslt w4, w6    ; compare values and skip next instruction if control output is within operating range (control output < upper limit)
-	bra C2P2Z_CURRENT_CLAMP_MAX_OVERRIDE    ; jump to override label if control output > upper limit
+	bra C2P2Z_OUTPUT_CURRENT_CLAMP_MAX_OVERRIDE    ; jump to override label if control output > upper limit
 	bclr w12, #NPMZ16_STATUS_USAT    ; clear upper limit saturation flag bit
-	bra C2P2Z_CURRENT_CLAMP_MAX_EXIT    ; jump to exit
-	C2P2Z_CURRENT_CLAMP_MAX_OVERRIDE:
+	bra C2P2Z_OUTPUT_CURRENT_CLAMP_MAX_EXIT    ; jump to exit
+	C2P2Z_OUTPUT_CURRENT_CLAMP_MAX_OVERRIDE:
 	mov w6, w4    ; override controller output
 	bset w12, #NPMZ16_STATUS_USAT    ; set upper limit saturation flag bit
-	C2P2Z_CURRENT_CLAMP_MAX_EXIT:
+	C2P2Z_OUTPUT_CURRENT_CLAMP_MAX_EXIT:
 	
 ; Check for lower limit violation
 	mov [w0 + #offMinOutput], w6    ; load lower limit value
 	cpsgt w4, w6    ; compare values and skip next instruction if control output is within operating range (control output > upper limit)
-	bra C2P2Z_CURRENT_CLAMP_MIN_OVERRIDE    ; jump to override label if control output < lower limit
+	bra C2P2Z_OUTPUT_CURRENT_CLAMP_MIN_OVERRIDE    ; jump to override label if control output < lower limit
 	bclr w12, #NPMZ16_STATUS_LSAT    ; clear lower limit saturation flag bit
-	bra C2P2Z_CURRENT_CLAMP_MIN_EXIT    ; jump to exit
-	C2P2Z_CURRENT_CLAMP_MIN_OVERRIDE:
+	bra C2P2Z_OUTPUT_CURRENT_CLAMP_MIN_EXIT    ; jump to exit
+	C2P2Z_OUTPUT_CURRENT_CLAMP_MIN_OVERRIDE:
 	mov w6, w4    ; override controller output
 	bset w12, #NPMZ16_STATUS_LSAT    ; set lower limit saturation flag bit
-	C2P2Z_CURRENT_CLAMP_MIN_EXIT:
+	C2P2Z_OUTPUT_CURRENT_CLAMP_MIN_EXIT:
 	
 ;------------------------------------------------------------------------------
 ; Write control output value to target
@@ -190,7 +188,7 @@ _c2p2z_current_Update:    ; provide global scope to routine
 	
 ;------------------------------------------------------------------------------
 ; Enable/Disable bypass branch target
-	C2P2Z_CURRENT_BYPASS_LOOP:
+	C2P2Z_OUTPUT_CURRENT_BYPASS_LOOP:
 	pop w12    ; restore working register used for status flag tracking
 	
 ;------------------------------------------------------------------------------
@@ -199,12 +197,12 @@ _c2p2z_current_Update:    ; provide global scope to routine
 ;------------------------------------------------------------------------------
 	
 ;------------------------------------------------------------------------------
-; Global function declaration _c2p2z_current_Reset
+; Global function declaration _c2p2z_output_current_Reset
 ; This function clears control and error histories enforcing a reset
 ;------------------------------------------------------------------------------
 	
-	.global _c2p2z_current_Reset
-_c2p2z_current_Reset:
+	.global _c2p2z_output_current_Reset
+_c2p2z_output_current_Reset:
 	
 ;------------------------------------------------------------------------------
 ; Clear control history array
@@ -229,12 +227,12 @@ _c2p2z_current_Reset:
 ;------------------------------------------------------------------------------
 	
 ;------------------------------------------------------------------------------
-; Global function declaration _c2p2z_current_Precharge
+; Global function declaration _c2p2z_output_current_Precharge
 ; This function loads user-defined default values into control and error histories
 ;------------------------------------------------------------------------------
 	
-	.global _c2p2z_current_Precharge
-_c2p2z_current_Precharge:
+	.global _c2p2z_output_current_Precharge
+_c2p2z_output_current_Precharge:
 	
 ;------------------------------------------------------------------------------
 ; Charge error history array with defined value
