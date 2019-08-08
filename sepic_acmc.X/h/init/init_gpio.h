@@ -101,6 +101,19 @@
     #define DBGPIN_3_CLEAR	{ _LATB5 = 0; }
     #define DBGPIN_3_TOGGLE	{ _LATB5 ^= 1; }
     #define DBGPIN_3_INIT	{ _LATB5 = 0; _TRISB5 = 0; }
+
+    // Green on Digital Power Development Board
+    #define DBGLED_GN_SET       { _LATD13 = 1; }
+    #define DBGLED_GN_CLEAR     { _LATD13 = 0; }
+    #define DBGLED_GN_TOGGLE	{ _LATD13 ^= 1; }
+    #define DBGLED_GN_INIT      { _LATD13 = 0; _TRISD13 = 0; }
+
+    // Red LED on SEPIC Board
+    #define DBGLED_RD_SET       { _LATD8 = 1; }
+    #define DBGLED_RD_CLEAR     { _LATD8 = 0; }
+    #define DBGLED_RD_TOGGLE	{ _LATD8 ^= 1; }
+    #define DBGLED_RD_INIT      { _LATD8 = 0; _TRISD8 = 0; }
+
 #endif
 
 

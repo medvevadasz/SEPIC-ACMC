@@ -12,6 +12,8 @@
 
 #include "main.h"
 
+
+
 volatile uint16_t tgl_cnt = 0;  // local counter of LED toggle loops
 #define TGL_INTERVAL    2999    // LED toggle interval of (2999 + 1) x 100usec = 100ms
 #define TMR1_TIMEOUT    30000   // Timeout protection for Timer1 interrupt flag bit
@@ -31,9 +33,8 @@ int main(void) {
     
     // Basic setup of common power controller peripheral modules
     init_pwm_module();  // Set up PWM module (basic module configuration)
-    init_acmp_module(); // Set up analog comparator/DAC module
+//    init_acmp_module(); // Set up analog comparator/DAC module
     init_adc_module();  // Set up Analog-To-Digital converter module
-    init_vin_adc();     // Initialize ADC Channel to measure input voltage
     fault_check_init(); // Initialize fault monitor objects
     
     ext_reference_init();   // initialize external reference input
@@ -42,16 +43,16 @@ int main(void) {
     sepic.soft_start.phase = SEPIC_SS_INIT;   
     sepic.status.flags.auto_start = true;
     
-// ===========================================
- // ToDo: FOR DEBUGGING ONLY! REMOVE WHEN DONE
-// ===========================================
-    // Comparator output = RB11(RP43) = TP41 on DP DevBoard
-    __builtin_write_RPCON(0x0000);
-    _TRISB11 = 0;
-    _LATB11 = 0;
-    RPOR5bits.RP43R = 23;      // Assign COMP1 (=23) output to pin RB11 = RP43  (DSP_GPIO3)
-__builtin_write_RPCON(0x0800);
-// ===========================================
+//// ===========================================
+// // ToDo: FOR DEBUGGING ONLY! REMOVE WHEN DONE
+//// ===========================================
+//    // Comparator output = RB11(RP43) = TP41 on DP DevBoard
+//    __builtin_write_RPCON(0x0000);
+//    _TRISB11 = 0;
+//    _LATB11 = 0;
+//    RPOR5bits.RP43R = 23;      // Assign COMP1 (=23) output to pin RB11 = RP43  (DSP_GPIO3)
+//__builtin_write_RPCON(0x0800);
+//// ===========================================
     
     
     // Enable Timer1
@@ -70,7 +71,8 @@ __builtin_write_RPCON(0x0800);
 //        DBGPIN_1_TOGGLE; // Toggle DEBUG-PIN
 
         exec_sepic_pwr_control();
-        fault_check_exec();
+//        fault_check_exec(); 
+        fault_check_dummy_exec();   // ToDo: Use it only to establish current loop compensator
         
         if(sepic.status.flags.op_status == SEPIC_STAT_ON) {
             DBGLED_GN_SET;
