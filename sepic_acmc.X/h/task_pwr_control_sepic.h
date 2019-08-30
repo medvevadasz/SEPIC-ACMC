@@ -36,10 +36,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//#include "c2p2z_sepic.h"
-#include "c2p2z_current.h"
-#include "c2p2z_output_current.h"
-//#include "c2p2z_voltage.h"
+
+#include "c2p2z_iin.h"
+#include "c2p2z_iout.h"
+
 
 #ifdef	__cplusplus
 extern "C" {
@@ -77,28 +77,33 @@ typedef union {
 // SEPIC converter soft-start settings data structure and defines
 // ==============================================================================================
 typedef enum {
-    SEPIC_SS_INIT            = 0,  // Soft-Start Phase Initialization
-    SEPIC_SS_LAUNCH_PER      = 1,  // Soft-Start Phase Peripheral Launch
-    SEPIC_SS_STANDBY         = 2,  // Soft-Start Phase Standby (wait for GO command)
-    SEPIC_SS_PWR_ON_DELAY    = 3,  // Soft-Start Phase Power On Delay
-    SEPIC_SS_CALIB           = 4,  // Soft-Start Phase Calibration     
-    SEPIC_SS_RAMP_UP         = 5,  // Soft-Start Phase Output Ramp Up 
-    SEPIC_SS_PWR_GOOD_DELAY  = 6,  // Soft-Start Phase Power Good Delay
-    SEPIC_SS_COMPLETE        = 7   // Soft-Start Phase Complete
+    SEPIC_SS_INIT               = 0,  // Soft-Start Phase Initialization
+    SEPIC_SS_LAUNCH_PER         = 1,  // Soft-Start Phase Peripheral Launch
+    SEPIC_SS_STANDBY            = 2,  // Soft-Start Phase Standby (wait for GO command)
+    SEPIC_SS_PWR_ON_DELAY       = 3,  // Soft-Start Phase Power On Delay
+    SEPIC_SS_CAL_IIN_OFFSET     = 4,  // Soft-Start Phase Input Current Sensor Offset Calibration     
+    SEPIC_SS_WAIT_IOUT_SENSE    = 5,  // Soft-Start Phase Output Current Sensor Common-Mode Ramp Up  
+    SEPIC_SS_INCR_CLAMP         = 6,  // Soft-Start Phase Output Current Compensator Clamping Value Ramp Up
+    SEPIC_SS_RAMP_UP            = 7,  // Soft-Start Phase Output Current Compensator Reference Value Ramp Up 
+    SEPIC_SS_PWR_GOOD_DELAY     = 8,  // Soft-Start Phase Power Good Delay
+    SEPIC_SS_COMPLETE           = 9   // Soft-Start Phase Complete
 }SEPIC_SOFT_START_STATUS_e;
 
 typedef struct {
-    volatile uint16_t reference;            // Soft-Start target reference value
-    volatile uint16_t pwr_on_delay;         // Soft-Start POwer On Delay
-    volatile uint16_t precharge_delay;      // Soft-Start Bootstrap Capacitor pre-charge delay
-    volatile uint16_t ramp_period;          // Soft-Start Ramp-Up Duration
-    volatile uint16_t ramp_ref_increment;   // Soft-Start Single Reference Increment per Step
-    volatile uint16_t pwr_good_delay;       // Soft-Start Power Good Delay
-    volatile uint16_t counter;              // Soft-Start Execution Counter
-    volatile uint16_t avg_counter;          // Counter for measuring offset of sensor for input current
-    volatile uint16_t iin_acc;              // Accumulator for averaging to calculate input current offset
-    volatile uint16_t cal_counter;          // Counter for validating output current sensor is in operation
-    volatile SEPIC_SOFT_START_STATUS_e phase; // Soft-Start Phase Index
+    volatile uint16_t iout_reference;           // Soft-Start initial output current target reference
+    volatile uint16_t iin_reference;            // Soft-Start initial input current clamping value
+    volatile uint16_t pwr_on_delay;             // Soft-Start POwer On Delay
+    volatile uint16_t precharge_delay;          // Soft-Start Bootstrap Capacitor pre-charge delay
+    volatile uint16_t pwr_good_delay;           // Soft-Start Power Good Delay
+    volatile uint16_t ramp_period_1;            // Soft-Start 1st Phase Ramp-Up Duration
+    volatile uint16_t ramp_period_2;            // Soft-Start 2nd Phase Ramp-Up Duration
+    volatile uint16_t ramp_iin_ref_increment;   // Soft-Start Single Reference Increment per Step
+    volatile uint16_t ramp_iout_ref_increment;  // Soft-Start Single Reference Increment per Step
+    volatile uint16_t counter;                  // Soft-Start Execution Counter
+    volatile uint16_t avg_counter;              // Counter for measuring offset of sensor for input current
+    volatile uint16_t iin_acc;                  // Accumulator for averaging to calculate input current offset
+    volatile uint16_t cal_counter;              // Counter for validating output current sensor is in operation
+    volatile SEPIC_SOFT_START_STATUS_e phase;   // Soft-Start Phase Index
 }SEPIC_SOFT_START_t;                        // SEPIC soft-start settings and variables
 
 // ==============================================================================================
@@ -111,7 +116,7 @@ typedef struct {
     volatile uint16_t v_in;         // SEPIC input voltage
     volatile uint16_t v_out;        // SEPIC output voltage
     volatile uint16_t i_in_ref;     // SEPIC reference for input current
-    volatile uint16_t i_out_ref     // SEPIC reference for output current
+    volatile uint16_t i_out_ref;    // SEPIC reference for output current
     volatile uint16_t v_ref;        // SEPIC reference voltage
     volatile uint16_t i_in_offs;    // Input current sensor offset
 }SEPIC_CONVERTER_DATA_t;            // SEPIC runtime data

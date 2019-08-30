@@ -108,7 +108,7 @@
     #define DBGLED_GN_TOGGLE	{ _LATD13 ^= 1; }
     #define DBGLED_GN_INIT      { _LATD13 = 0; _TRISD13 = 0; }
 
-    // Red LED on SEPIC Board
+    // TP52/Red LED on Digital Power Development Board 
     #define DBGLED_RD_SET       { _LATD8 = 1; }
     #define DBGLED_RD_CLEAR     { _LATD8 = 0; }
     #define DBGLED_RD_TOGGLE	{ _LATD8 ^= 1; }

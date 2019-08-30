@@ -83,7 +83,10 @@ int main(void) {
             DBGLED_RD_SET;
         }
         
-        
+//// Wait until ADC conversion for output current finishes
+//while(!_SEPIC_IOUT_ADC_IF);  
+//// Wait until ADC conversion for output current finishes
+//while(!_SEPIC_IIN_ADC_IF);
 
         if (tgl_cnt++ > TGL_INTERVAL) // Count 100usec loops until LED toggle interval is exceeded
         {

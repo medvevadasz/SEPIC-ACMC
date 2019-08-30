@@ -165,7 +165,7 @@ volatile uint16_t init_vout_adc(void) {
     ADIEHbits.IE16 = 1; // Common Interrupt Enable: Common and individual interrupts are enabled for the corresponding channel
     
     // ADTRIGnL/ADTRIGnH: ADC CHANNEL TRIGGER n(x) SELECTION REGISTERS LOW AND HIGH
-    ADTRIG4Lbits.TRGSRC16 = 0b00101 // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2
+    ADTRIG4Lbits.TRGSRC16 = 0b00101; // Trigger Source Selection for Corresponding Analog Inputs: PWM1 Trigger 2
     
     // ADCMPxCON: ADC DIGITAL COMPARATOR x CONTROL REGISTER
     ADCMP1CONbits.CHNL = 16; // Input Channel Number: 16=AN16
@@ -393,7 +393,7 @@ volatile uint16_t enable_adc_interrupts(void) {
      // INITIALIZE AN17 INTERRUPTS (SEPIC Output Current)
     _ADCAN17IP = 5;     // Interrupt Priority Level 5
     _ADCAN17IF = 0;     // Reset Interrupt Flag Bit
-    _ADCAN17IE = 0;     // Enable ADCAN17 Interrupt
+    _ADCAN17IE = 0;     // Disable ADCAN17 Interrupt
     
      // INITIALIZE AN6 INTERRUPTS (Potentiometer Voltage for manually setting reference)
     _ADCAN6IP = 2;      // Interrupt Priority Level 2

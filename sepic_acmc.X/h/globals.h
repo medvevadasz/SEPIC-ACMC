@@ -256,10 +256,14 @@ extern "C" {
 #define SEPIC_IOUT_FB_GAIN      2.5      // [V/A]    
     
 #define SEPIC_IOUT_MINIMUM       0.0     // Minimum output current in [A]
+#define SEPIC_IOUT_NOMINAL       0.5     // Nominal output current in current generator mode [A]    
 #define SEPIC_IOUT_MAXIMUM       1.0     // Maximum output current in [A]    
  
-#define SEPIC_MIN_IOUT          (uint16_t)(SEPIC_IOUT_MINIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN )
-#define SEPIC_MAX_IOUT          (uint16_t)(SEPIC_IOUT_MAXIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN )    
+#define SEPIC_IOUT_MIN          (uint16_t)(SEPIC_IOUT_MINIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN )
+#define SEPIC_IOUT_NOM          (uint16_t)(SEPIC_IOUT_NOMINAL * SEPIC_IOUT_FB_GAIN / ADC_GRAN )    
+#define SEPIC_IOUT_MAX          (uint16_t)(SEPIC_IOUT_MAXIMUM * SEPIC_IOUT_FB_GAIN / ADC_GRAN ) 
+    
+      
     
 //~~~~~~~~~~~~~~~~~
 // Input Current
@@ -278,12 +282,10 @@ extern "C" {
 #define SEPIC_IIN_FB_OFFSET         (float)( ADC_REF * (IINR1 + IINR2)/(IINR1 + IINR3) )
 #define SEPIC_IIN_FEEDBACK_OFFSET   (uint16_t)((SEPIC_IIN_FB_OFFSET / ADC_REF) * ADC_GRAN)
 
-#define SEPIC_IIN_MINIMUM   0.05 // [A]
-#define SEPIC_IIN_MAXIMUM   0.5  // [A] Note: this is only effective when voltage loop is feeding current compensator
-    
+#define SEPIC_IIN_MINIMUM   0.0  // [A]
+#define SEPIC_IIN_MAXIMUM   2.0  // [A] Note: this is only effective when voltage loop is feeding current compensator
 #define SEPIC_MAX_IIN       (uint16_t)(SEPIC_IIN_MAXIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
-#define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN ) 
-    
+#define SEPIC_MIN_IIN       (uint16_t)(SEPIC_IIN_MINIMUM * SEPIC_IIN_FB_GAIN / ADC_GRAN )
 
     
  /*!Startup Behavior
@@ -304,28 +306,29 @@ extern "C" {
  * *************************************************************************************************/
 
 #define SEPIC_POWER_ON_DELAY    500e-3      // power on delay in [sec]
-//#define SEPIC_RAMP_PERIOD       50e-3         // ramp period in [sec]
-#define SEPIC_RAMP_PERIOD       20e-3         // ramp period in [sec]
-#define SEPIC_POWER_GOOD_DELAY  100e-3        // power good in [sec]
+#define SEPIC_RAMP_PERIOD_1      10e-3      // ramp period for inner current loop reference value in [sec]     
+#define SEPIC_RAMP_PERIOD_2      20e-3      // ramp period for outer current loop reference value in [sec]
+#define SEPIC_POWER_GOOD_DELAY  100e-3      // power good delay in [sec]
 
 #define SEPIC_PODLY     (uint16_t)((SEPIC_POWER_ON_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_RPER      (uint16_t)((SEPIC_RAMP_PERIOD / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_RPER_1    (uint16_t)((SEPIC_RAMP_PERIOD_1 / MAIN_EXECUTION_PERIOD)-1.0)
+#define SEPIC_RPER_2    (uint16_t)((SEPIC_RAMP_PERIOD_2 / MAIN_EXECUTION_PERIOD)-1.0)
 #define SEPIC_PGDLY     (uint16_t)((SEPIC_POWER_GOOD_DELAY / MAIN_EXECUTION_PERIOD)-1.0)
-#define SEPIC_REF_STEP  (uint16_t)((SEPIC_VOUT_REF / (SEPIC_RPER + 1.0)))
 
-// Only for establishing current compensator characteristics     
-#define SEPIC_IIN_SOFT_START_REFERENCE  0.25  // [A]
-
-#define SEPIC_IIN_MAXREF_INCREMENT      0.1   // [A]; Used in the Calibration Phase to step the maximum allowed setpoint
+//~~~~~~~~~~~~~~~~~~~~
+// Input Current Loop 
+#define SEPIC_IIN_SS_INIT_REFERENCE  0.2  // [A]
+#define SEPIC_IIN_MAXREF_INCREMENT   0.1   // [A]; Used in the Calibration Phase to step the maximum allowed setpoint
     
-#define IIN_SS_REF              (uint16_t)(SEPIC_IIN_SOFT_START_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
-#define IIN_SS_STEP             (uint16_t)(IIN_SS_REF / (SEPIC_RPER + 1.0)) 
-#define SEPIC_IIN_MAXREF_INC    (uint16_t)(SEPIC_IIN_MAXREF_INCREMENT * SEPIC_IIN_FB_GAIN / ADC_GRAN )
+#define IIN_SS_INIT_REF         (uint16_t)(SEPIC_IIN_SS_INIT_REFERENCE *SEPIC_IIN_FB_GAIN / ADC_GRAN)
+#define IIN_SS_STEP             (uint16_t)((SEPIC_MAX_IIN - IIN_SS_INIT_REF) / (SEPIC_RPER_1 + 1.0)) 
+#define SEPIC_IIN_MAXREF_INC    (uint16_t)(SEPIC_IIN_MAXREF_INCREMENT * SEPIC_IIN_FB_GAIN / ADC_GRAN)
 
-#define SEPIC_IOUT_SOFT_START_REFERENCE  0.36 // [A]; This is the value the ramp-up phase converges to
-    
-#define IOUT_SS_REF  (uint16_t)(SEPIC_IOUT_SOFT_START_REFERENCE *SEPIC_IOUT_FB_GAIN / ADC_GRAN)
-#define IOUT_SS_STEP (uint16_t)(IOUT_SS_REF / (SEPIC_RPER + 1.0)) 
+//~~~~~~~~~~~~~~~~~~~~
+// Output Current Loop    
+#define IOUT_SS_INIT_REF   (SEPIC_IOUT_NOM >> 1)
+#define IOUT_SS_FINAL_REF  SEPIC_IOUT_NOM    
+#define IOUT_SS_STEP (uint16_t)( (IOUT_SS_FINAL_REF - IOUT_SS_INIT_REF) / (SEPIC_RPER_2 + 1.0)) 
 
 /*!FAULT Shut Down and Recover
  * *************************************************************************************************
@@ -384,7 +387,7 @@ extern "C" {
 
 #define SEPIC_IIN_ADCTRIG               PG1TRIGA
 #define SEPIC_IOUT_ADCTRIG              PG1TRIGA    
-//#define SEPIC_VOUT_ADCTRIG              PG1TRIGA
+#define SEPIC_VOUT_ADCTRIG              PG1TRIGB
 
 #define SEPIC_VOUT_FEEDBACK_OFFSET      0
 #define SEPIC_IOUT_FEEDBACK_OFFSET      0
