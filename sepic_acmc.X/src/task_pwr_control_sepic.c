@@ -129,11 +129,13 @@ volatile uint16_t exec_sepic_pwr_control(void) {
          * the ADC has to run and produce data, the power controller has to be enabled 
          * and the status bit "sepic.status.flags.GO" has to be set.
          * 
+         * Reference of the output current controller is hijacked to "sepic.soft_start.iout_reference"
+         * and the output is clamped to limit initial setpoint for the inner current loop. 
+         * 
          * Please note:
          * The data structure sepic.status.flags also offers a setting called auto_start.
          * When this bit is set, the 'enable' and 'GO' bits are set automatically and only
-         * the 'adc_active' and 'fault_active' bits are checked.
-        */
+         * the 'adc_active' and 'fault_active' bits are checked. */
         case SEPIC_SS_STANDBY: 
 DBGPIN_2_SET;
             sepic.status.flags.op_status = SEPIC_STAT_STANDBY;  // Set SEPIC status to STANDBY
@@ -161,7 +163,7 @@ DBGPIN_2_SET;
                 // Set initial reference for the outer current loop
                 sepic.soft_start.iout_reference = IOUT_SS_INIT_REF; 
                 
-                // Clamp output current controller output 
+                // Clamp output current controller 
                 c2p2z_iout.MaxOutput  = IIN_SS_INIT_REF;
                 // Protecting startup settings against ZERO settings
                 if(c2p2z_iout.MaxOutput == 0) {           
@@ -180,7 +182,7 @@ DBGPIN_2_SET;
         /*!SEPIC_SS_PWR_ON_DELAY
          * In this step the soft-start procedure is counting up call intervals until
          * the defined power-on delay period has expired. PWM and control loop are disabled.
-         * At the end of this phase, the state automatically switches to RAMP_UP mode */     
+         * At the end of this phase, the state automatically switches to SEPIC_SS_CAL_IIN_OFFSET mode */     
         case SEPIC_SS_PWR_ON_DELAY:  
 //DBGPIN_2_CLEAR;
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -195,8 +197,10 @@ DBGPIN_2_SET;
             break;    
             
         /*!SEPIC_SS_CAL_IIN_OFFSET
-         *
-         */    
+         * In this state the the offset pertaining to the input current measurement is established
+         * and fed into the input current compensator. Once the offset has been established, PWM output,
+         * inner and outer current loops get enabled.  At the end of this phase, the state automatically 
+         * switches to SEPIC_SS_WAIT_IOUT_SENSE mode. */    
         case SEPIC_SS_CAL_IIN_OFFSET:  
 //DBGPIN_2_SET;
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -223,12 +227,16 @@ DBGPIN_2_SET;
                 
                 // Switch to next phase
                 sepic.soft_start.phase   = SEPIC_SS_WAIT_IOUT_SENSE;
+                
+sepic.soft_start.cal_counter = 0;
             }
             break;    
                  
         /*!SEPIC_SS_WAIT_IOUT_SENSE
-         *
-         */    
+         * In this state the inner current loop provides the load with limited amount of current
+         * - set in STANDBY mode - to raise the output voltage above approximately 2.5 V, so that
+         * the output current sensor produces valid data. Once 8 consecutive samples taken at the 
+         * output are considered valid, the state machine switches to SEPIC_SS_INCR_CLAMP mode. */    
         case  SEPIC_SS_WAIT_IOUT_SENSE:
 //DBGPIN_2_CLEAR;            
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -242,13 +250,15 @@ DBGPIN_2_SET;
                 }
             } 
             else if (sepic.soft_start.cal_counter != 0) {
-                sepic.soft_start.cal_counter--;
+                sepic.soft_start.cal_counter = 0;
             }
             break;
         
         /*!SEPIC_SS_INCR_CLAMP
-         *
-         */  
+         * Once this state is reached, upper output limit of the output current compensator providing
+         * reference value to the inner current loop is increased step-by-step until the defined
+         * maximum is reached, allowing the amount of controlled output current to flow  that is determined
+         * by the value set in STANDBY mode.*/  
         case SEPIC_SS_INCR_CLAMP:
 //DBGPIN_2_SET;            
             sepic.status.flags.op_status = SEPIC_STAT_START; // Set SEPIC status to START-UP
@@ -264,8 +274,8 @@ DBGPIN_2_SET;
             break;
                     
         /*!SEPIC_SS_RAMP_UP
-         * During ramp up, the PWM and control loop are forced ON while the control reference is 
-         * incremented. Once the 'private' reference of the soft-start data structure equals the
+         * During ramp up, the outer loop control reference is incremented. 
+         * Once the 'private' reference of the soft-start data structure equals the
          * reference level set in sepic.data.v_ref, the ramp-up period ends and the state machine 
          * automatically switches to POWER GOOD DELAY mode */     
         case SEPIC_SS_RAMP_UP: // Increasing reference every scheduler cycle
@@ -275,7 +285,7 @@ DBGPIN_2_SET;
             sepic.soft_start.iout_reference += sepic.soft_start.ramp_iout_ref_increment;  
            
             // Check if ramp is complete
-            if (sepic.soft_start.iout_reference >= SEPIC_IOUT_NOM)
+            if (sepic.soft_start.iout_reference >= sepic.data.i_out_ref)
             {
                 // Restore original source for outer current loop reference
                 c2p2z_iout.ptrControlReference = &sepic.data.i_out_ref;
@@ -386,9 +396,11 @@ DBGPIN_3_SET;
 //    while(!_SEPIC_IOUT_ADC_IF); 
         
     sepic.data.i_out = SEPIC_IOUT_ADCBUF;
-//DBGPIN_2_SET;     
+DBGPIN_2_SET;  
+sepic.soft_start.cal_counter++;
    c2p2z_iout_Update(&c2p2z_iout);
-//DBGPIN_2_CLEAR; 
+sepic.soft_start.cal_counter++;
+DBGPIN_2_CLEAR; 
     SEPIC_VOUT_ADCTRIG = SEPIC_IIN_ADCTRIG + (PWM_PERIOD >> 1);
     
     _SEPIC_IOUT_ADC_IF = 0;  // Clearing the ADCANx interrupt flag

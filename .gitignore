@@ -47,6 +47,7 @@ nbproject/Package-*.bash
 build/
 nbbuild/
 nbdist/
+dist/
 nbactions.xml
 nb-configuration.xml
 funclist
@@ -66,10 +67,8 @@ disassembly/
 !sepic_pcmc.X/*.dcld
 !src/
 !h/
-!dist/
 !sepic_pcmc.X/src/
 !sepic_pcmc.X/h/
-!sepic_pcmc.X/dist/
 !sepic_pcmc.X/nbproject/configurations.xml
 
 

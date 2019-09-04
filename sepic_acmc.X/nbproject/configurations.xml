@@ -65,9 +65,10 @@
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
       <itemPath>readme.txt</itemPath>
-      <itemPath>readme_iloop_tweak.txt</itemPath>
       <itemPath>sepic_iout_ctrl.dcld</itemPath>
       <itemPath>sepic_iin_ctrl.dcld</itemPath>
+      <itemPath>iout_controller_update_issue_when_gain_greater_0.97.PNG</itemPath>
+      <itemPath>readme_acmc.txt</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
